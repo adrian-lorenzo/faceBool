@@ -1,7 +1,8 @@
 import P5 from "p5";
 import { FaceDetection, WithFaceLandmarks, FaceLandmarks68 } from "face-api.js";
 import FaceDetectionService from "../services/FaceDetectionService";
-import {Player,Vector} from "./User"
+import {Player,Vector} from "./User";
+import {Plataforms} from "./Plataforms";
 
 enum State{
     jump  = 0,
@@ -16,7 +17,8 @@ const Sketch = (p5: P5) => {
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let user: Player;
     let state: State;
-
+    let p: Plataforms;
+    
     p5.setup = () => {
         // MARK: - Code for object detection
         /*
@@ -31,6 +33,35 @@ const Sketch = (p5: P5) => {
         p5.background("black");
         p5.fill("green");
         p5.circle(user.position.x,user.position.y, user.mass);
+        user.fall();
+        user.update();
+        move();
+        user.checkEdges(p5.width,p5.height);
+        p = new Plataforms(70,70,100);
+    }
+
+    p5.windowResized = () => {
+        dimensions = { width: window.innerWidth, height: window.innerHeight };
+        p5.resizeCanvas(dimensions.width, dimensions.height);
+    }
+
+
+    p5.draw = () => {
+        // MARK: - Code for object detection
+        /*
+        p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
+        faceDetectionService.getFace(videoCapture.elt, dimensions).then((detection) => {
+            if (detection) {
+                drawBoundingBox(detection);
+            }
+        });
+        */
+
+        p5.background("black");
+        p5.fill("green");
+        p5.circle(user.position.x,user.position.y, user.mass);
+        p5.fill(255, 255, 255);
+        p5.rect(p.firstPoint.x, p.firstPoint.y, p.secondPoint.x,p.secondPoint.y);
         user.fall();
         user.update();
         move();
@@ -85,22 +116,6 @@ const Sketch = (p5: P5) => {
             state = State.none;
             user.jump(new Vector(0,0.1));
         }
-    }
-
-
-    p5.draw = () => {
-        p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
-        faceDetectionService.getFace(videoCapture.elt, dimensions).then((detection) => {
-            if (detection) {
-                drawBoundingBox(detection);
-            }
-        });
-    }
-
-
-    p5.windowResized = () => {
-        dimensions = { width: window.innerWidth, height: window.innerHeight };
-        p5.resizeCanvas(dimensions.width, dimensions.height);
     }
 
 
