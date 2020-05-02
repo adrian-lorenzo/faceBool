@@ -1,5 +1,6 @@
 import P5 from "p5"
-import {Player,Vector} from "./User"
+import {Player,Vector} from "./Player"
+import {Plataforms} from "./Plataforms"
 
 
 enum State{
@@ -12,10 +13,12 @@ enum State{
 const Sketch = (p5: P5) => {
     let user:Player;
     let state:State;
+    let p:Plataforms;
     p5.setup = () => {
         p5.createCanvas(1000, 700);
         user  = new Player(50,50,30);
         state = State.none;
+        p     = new Plataforms(70,70,100);
     }
 
     function move() {
@@ -44,6 +47,8 @@ const Sketch = (p5: P5) => {
         p5.background("black");
         p5.fill("green");
         p5.circle(user.position.x,user.position.y, user.mass);
+        p5.fill(255,255,255);
+        p5.rect(p.firstPoint.x, p.firstPoint.y, p.secondPoint.x,p.secondPoint.y);
         user.fall();
         user.update();
         move();
