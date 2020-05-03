@@ -1,4 +1,4 @@
-import { Box } from "./Box";
+import { BoundingBox } from "./BoundingBox";
 
 export class Vector {
     x:number;
@@ -34,7 +34,7 @@ export class Vector {
 
 }
 
-export class Player implements Box{
+export class Player implements BoundingBox{
     position:Vector;
     velocity:Vector;
     acceleration:Vector;
