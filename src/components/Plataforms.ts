@@ -1,21 +1,14 @@
 import { Vector } from "./Player";
+import { Box } from "./Box";
 
-export class Plataforms{
-    firstPoint:Vector;
-    secondPoint:Vector;    
-    readonly height:number = 5;
+export class Plataforms implements Box{
+    pointBox : Vector;
+    widthBox : number;
+    readonly heightBox: number = 5;
     constructor(posX:number, posY:number, dim:number){
-        this.firstPoint  = new Vector(posX, posY);
-        this.secondPoint = new Vector(dim, this.height);
-    }
+        this.pointBox = new Vector(posX, posY);
+        this.widthBox = dim;
 
-    getFirstPoint():Vector{
-        return this.firstPoint;
     }
-
-    getSecondPoint():Vector{
-        return this.secondPoint;
-    }
-
     
 }
