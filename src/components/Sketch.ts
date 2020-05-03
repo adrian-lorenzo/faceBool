@@ -14,7 +14,6 @@ const Sketch = (p5: P5) => {
     let user:Player;
     let state:State;
     let p:Plataforms;
-    let pColor = p5.color(255,255,255);
     p5.setup = () => {
         p5.createCanvas(1000, 700);
         user  = new Player(50,50,30);
@@ -48,7 +47,7 @@ const Sketch = (p5: P5) => {
         p5.background("black");
         p5.fill("green");
         p5.circle(user.position.x,user.position.y, user.mass);
-        p5.fill(pColor);
+        p5.fill(p5.color(p.color));
         p5.rect(p.pointBox.x, p.pointBox.y, p.widthBox,p.heightBox);
         p5.noFill();
         p5.stroke(255,0,255);
@@ -66,13 +65,17 @@ const Sketch = (p5: P5) => {
             user.pointBox.x + user.widthBox < p.pointBox.x || 
             user.pointBox.y > p.pointBox.y + p.heightBox  ||
             user.pointBox.y + user.heightBox < p.pointBox.y) {
-            pColor = p5.color("blank");
+            p.changeColor("blank");
             user.canJump = false;
             return;
         }
-        pColor = p5.color("red");
+        p.changeColor("red");
         if(user.pointBox.y < p.pointBox.y && 
-            (user.pointBox.x > p.pointBox.x && user.pointBox.x < p.pointBox.x + p.widthBox)){
+            (
+                (user.pointBox.x > p.pointBox.x && user.pointBox.x < p.pointBox.x + p.widthBox) ||
+                (user.pointBox.x + user.widthBox > p.pointBox.x && user.pointBox.x + user.widthBox < p.pointBox.x + p.widthBox)
+            )
+        ){
             user.canJump = true;
             user.pointBox.y = p.pointBox.y - user.heightBox;
             user.position.y = p.pointBox.y - user.mass/2;
