@@ -1,3 +1,5 @@
+import { Box } from "./Box";
+
 export class Vector {
     x:number;
     y:number;
@@ -32,19 +34,25 @@ export class Vector {
 
 }
 
-export class Player {
+export class Player implements Box{
     position:Vector;
     velocity:Vector;
     acceleration:Vector;
     mass:number;
     readonly gravity: Vector = new Vector(0,9.8);
     canJump:boolean;
+    pointBox:Vector;
+    widthBox:number;
+    heightBox:number;
     constructor(posX:number, posY:number, mass:number) {
         this.position     = new Vector(posX,posY);
         this.mass         = mass;
         this.velocity     = new Vector(0,0);
         this.acceleration = new Vector(0,0);
         this.canJump      = false;
+        this.pointBox = new Vector(posX - mass/2,posY-mass/2);
+        this.widthBox = mass;
+        this.heightBox = mass;
     }
 
     fall(){
@@ -73,28 +81,32 @@ export class Player {
     update(){
         this.velocity.add(this.acceleration);
         this.position.add(this.velocity);
+        this.pointBox = new Vector(this.position.x - this.mass/2, this.position.y - this.mass/2)
         this.acceleration.mult(0);
     }
 
-    cleanMove(){
-        this.velocity     = new Vector(0,0);
-        this.acceleration = new Vector(0,0);
+    stop(){
+        this.velocity.mult(0);
     }
 
     checkEdges(width:number, height:number){
-        if (this.position.x > width) {
-            this.position.x = width;
+        if (this.position.x + this.widthBox > width) {
+            this.position.x = width - this.mass;
+            this.pointBox.x = width;
             this.velocity.x *= -1;
         } else if (this.position.x < 0) {
             this.position.x = 0;
+            this.pointBox.x = 0;
             this.velocity.x *= -1;
         }
     
-        if (this.position.y > height) {
-            this.position.y = height;
+        if (this.position.y + this.heightBox > height) {
+            this.position.y = height - this.mass;
+            this.pointBox.y = height;
             this.canJump = true;
         } else if (this.position.y < 0) {
             this.position.y = 0;
+            this.pointBox.y = 0;
             this.velocity.x *= -1;
         }
 
