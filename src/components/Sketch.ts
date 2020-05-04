@@ -1,6 +1,8 @@
 import P5 from "p5"
 import {Player,Vector} from "./Player"
-import {Plataforms} from "./Plataforms"
+import {Plataform} from "./Plataform"
+import { Level } from "./Level";
+import { CollisionsController } from "./CollisionsController";
 
 
 enum State{
@@ -13,12 +15,20 @@ enum State{
 const Sketch = (p5: P5) => {
     let user:Player;
     let state:State;
-    let p:Plataforms;
+    let level:Level;
+    let dect:CollisionsController;
     p5.setup = () => {
         p5.createCanvas(1000, 700);
         user  = new Player(50,50,30);
         state = State.none;
-        p     = new Plataforms(30,500,100);
+        level = new Level();
+        dect  = new CollisionsController();
+        /*for (let index = 0; index < 20; index++) {
+            level.add(new Plataform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
+        }*/
+        level.add(new Plataform(50,500,100))
+        level.add(new Plataform(500,500,100))
+        level.add(new Plataform(5,100,50))
     }
 
     function move() {
@@ -47,8 +57,10 @@ const Sketch = (p5: P5) => {
         p5.background("black");
         p5.fill("green");
         p5.circle(user.position.x,user.position.y, user.mass);
-        p5.fill(p5.color(p.color));
-        p5.rect(p.pointBox.x, p.pointBox.y, p.widthBox,p.heightBox);
+        for (const plat of level.getPlataforms()) {
+            p5.fill(p5.color(plat.color));
+            p5.rect(plat.pointBox.x, plat.pointBox.y, plat.widthBox,plat.heightBox);
+        }
         p5.noFill();
         p5.stroke(255,0,255);
         p5.rect(user.pointBox.x,user.pointBox.y, user.widthBox,user.heightBox);
@@ -56,14 +68,14 @@ const Sketch = (p5: P5) => {
         user.fall();
         user.update();
         move();
-        detection();
+        dect.detectionByRectangles(user,level);
         user.checkEdges(p5.width,p5.height);
     }
 
-    function detection(){
-        if (user.pointBox.x > p.pointBox.x + p.widthBox || 
-            user.pointBox.x + user.widthBox < p.pointBox.x || 
-            user.pointBox.y > p.pointBox.y + p.heightBox  ||
+    /*function detection(){
+        if (user.pointBox.x > p.pointBox.x   + p.widthBox    || 
+            user.pointBox.x + user.widthBox  < p.pointBox.x || 
+            user.pointBox.y > p.pointBox.y   + p.heightBox   ||
             user.pointBox.y + user.heightBox < p.pointBox.y) {
             p.changeColor("blank");
             user.canJump = false;
@@ -83,7 +95,7 @@ const Sketch = (p5: P5) => {
             user.velocity.y *= -1;
         }
 
-    }
+    }*/
 
     p5.keyPressed = () => {
         if (p5.key === 'W' || p5.key === 'w') {

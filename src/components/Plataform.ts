@@ -1,10 +1,10 @@
 import { Vector } from "./Player";
 import { BoundingBox } from "./BoundingBox";
 
-export class Plataforms implements BoundingBox{
+export class Plataform implements BoundingBox{
     pointBox : Vector;
     widthBox : number;
-    readonly heightBox: number = 5;
+    readonly heightBox: number = 10;
     color:string;
     constructor(posX:number, posY:number, dim:number){
         this.pointBox = new Vector(posX, posY);
