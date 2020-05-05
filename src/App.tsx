@@ -5,7 +5,7 @@ import Sketch from './components/Sketch';
 
 const App: React.FC = () => {
   const sketchRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
-  useEffect(() => {new p5(Sketch, sketchRef.current)}, [sketchRef]);
+  useEffect(() => { new p5(Sketch, sketchRef.current) }, [sketchRef]);
 
   return (
     <div className="App">
