@@ -7,13 +7,6 @@ import { Level } from "./Level";
 import { CollisionsController } from "./CollisionsController";
 import { KeyController } from "./KeyController";
 
-enum State{
-    jump  = 0,
-    left  = 1,
-    rigth = 2,
-    none  = 3
-}
-
 const Sketch = (p5: P5) => {
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
@@ -35,6 +28,8 @@ const Sketch = (p5: P5) => {
         state = State.none;
         */
 
+       p5.createCanvas(1000, 700);
+       user  = new Player(50,50,30);
        level = new Level();
        dect  = new CollisionsController();
        /*for (let index = 0; index < 20; index++) {
