@@ -40,7 +40,7 @@ export class Player implements BoundingBox{
     acceleration:Vector;
     mass:number;
     readonly gravity: Vector  = new Vector(0,9.8);
-    readonly maxSpeed: number = 15;
+    readonly maxSpeed: number = 12;
     canJump:boolean;
     pointBox:Vector;
     widthBox:number;
@@ -68,12 +68,10 @@ export class Player implements BoundingBox{
         }
         this.applyForce(force);
         this.velocity.y *= -1;
-        //console.log(this.position.y);
         this.canJump = false;
     }
 
     applyForce(force:Vector){
-        //force.subtract(this.gravity);
         this.acceleration.add(
             Vector.div(force,this.mass)
         );
