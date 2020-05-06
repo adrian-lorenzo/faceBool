@@ -1,6 +1,6 @@
 import P5 from "p5";
-import { FaceDetection, WithFaceLandmarks, FaceLandmarks68 } from "face-api.js";
-import FaceDetectionService from "../services/FaceDetectionService";
+//import { FaceDetection, WithFaceLandmarks, FaceLandmarks68 } from "face-api.js";
+//import FaceDetectionService from "../services/FaceDetectionService";
 import { Player,Vector } from "./Player";
 import { Plataform } from "./Plataform";
 import { Level } from "./Level";
@@ -8,8 +8,8 @@ import { CollisionsController } from "./CollisionsController";
 import { KeyController } from "./KeyController";
 
 const Sketch = (p5: P5) => {
-    const faceDetectionService = new FaceDetectionService();
-    let videoCapture: P5.Element;
+    //const faceDetectionService = new FaceDetectionService();
+    //let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let user: Player;
     let level: Level;
@@ -50,14 +50,12 @@ const Sketch = (p5: P5) => {
 
     p5.draw = () => {
         // MARK: - Code for object detection
-        /*
-        p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
+        /*p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
         faceDetectionService.getFace(videoCapture.elt, dimensions).then((detection) => {
             if (detection) {
                 drawBoundingBox(detection);
             }
-        });
-        */
+        });*/
 
        p5.background("black");
        p5.fill("green");
@@ -120,7 +118,7 @@ const Sketch = (p5: P5) => {
     }
 
 
-    const drawBoundingBox = (detection: WithFaceLandmarks<{detection: FaceDetection;}, FaceLandmarks68>) => {
+    /*const drawBoundingBox = (detection: WithFaceLandmarks<{detection: FaceDetection;}, FaceLandmarks68>) => {
         let points = detection.landmarks.positions;
         
         for (let i = 0; i < points.length; i++) {
@@ -133,7 +131,7 @@ const Sketch = (p5: P5) => {
 
         p5.noFill();
         p5.rect(box.x, box.y, box.width, box.height);
-    }
+    }*/
 }
 
 export default Sketch;
