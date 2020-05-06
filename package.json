@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^9.2.2",
     "@tensorflow/tfjs": "^1.7.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -14,6 +15,7 @@
     "@types/react-dom": "^16.9.0",
     "caller-path": "^3.0.0",
     "face-api.js": "^0.22.2",
+    "ngx-face-api-js": "^0.1.1",
     "node-sass": "^4.14.0",
     "p5": "^1.0.0",
     "react": "^16.13.1",
