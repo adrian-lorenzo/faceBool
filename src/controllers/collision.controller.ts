@@ -6,26 +6,27 @@ import { Player } from "../models/player.model";
 // solo deberia de devolver true o false
 export class CollisionsController {
     detectionByRectangles(player: Player, platforms: Array<Platform>) {
-        for (const paltaform of platforms) {
-            if (player.pointBox.x > paltaform.pointBox.x + paltaform.widthBox ||
-                player.pointBox.x + player.widthBox < paltaform.pointBox.x ||
-                player.pointBox.y > paltaform.pointBox.y + paltaform.heightBox ||
-                player.pointBox.y + player.heightBox < paltaform.pointBox.y) {
-                paltaform.changeColor("blank");
-                player.canJump = false;
+        for (const platform of platforms) {
+            if (player.pointBox.x > platform.pointBox.x + platform.widthBox ||
+                player.pointBox.x + player.widthBox < platform.pointBox.x ||
+                player.pointBox.y > platform.pointBox.y + platform.heightBox ||
+                player.pointBox.y + player.heightBox < platform.pointBox.y) {
+                platform.changeColor("blank");
+                // player.canJump = false; Esto da error, no permite mover al jugador (el cuadrao con el sirculo)
+                // if (platforms.length === 1) console.log("no colision")
                 continue;
             }
-
-            paltaform.changeColor("red");
-            if (player.pointBox.y < paltaform.pointBox.y &&
+            // if (platforms.length === 1) console.log("colision")
+            platform.changeColor("red");
+            if (player.pointBox.y < platform.pointBox.y &&
                 (
-                    (player.pointBox.x > paltaform.pointBox.x && player.pointBox.x < paltaform.pointBox.x + paltaform.widthBox) ||
-                    (player.pointBox.x + player.widthBox > paltaform.pointBox.x && player.pointBox.x + player.widthBox < paltaform.pointBox.x + paltaform.widthBox)
+                    (player.pointBox.x > platform.pointBox.x && player.pointBox.x < platform.pointBox.x + platform.widthBox) ||
+                    (player.pointBox.x + player.widthBox > platform.pointBox.x && player.pointBox.x + player.widthBox < platform.pointBox.x + platform.widthBox)
                 )
             ) {
                 player.canJump = true;
-                player.pointBox.y = paltaform.pointBox.y - player.heightBox;
-                player.position.y = paltaform.pointBox.y - player.mass / 2;
+                player.pointBox.y = platform.pointBox.y - player.heightBox;
+                player.position.y = platform.pointBox.y - player.mass / 2;
             } else {
                 player.velocity.y *= -1;
             }

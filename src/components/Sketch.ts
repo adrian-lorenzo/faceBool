@@ -65,6 +65,7 @@ const Sketch = (p5: P5) => {
             const points = detection.landmarks.positions
             userPlatform.setPosition(points[0].x, points[0].y)
             userPlatform.widthBox = points[16].x - points[0].x;
+            dect.detectionByRectangles(user, [userPlatform]);
 
         }
 
