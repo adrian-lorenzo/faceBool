@@ -4,7 +4,7 @@ import FaceDetectionService from "../services/FaceDetectionService";
 import { CollisionsController } from "./CollisionsController";
 import { KeyController } from "./KeyController";
 import { Level } from "./Level";
-import { Plataform } from "./Plataform";
+import { Platform } from "./Plataform";
 import { Player, Vector } from "./Player";
 
 const Sketch = (p5: P5) => {
@@ -18,7 +18,7 @@ const Sketch = (p5: P5) => {
     let speed: number;
 
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
-    let userPlatform: Plataform = new Plataform(0, 0, 0)
+    let userPlatform: Platform = new Platform(0, 0, 0)
 
     p5.setup = () => {
         // MARK: - Code for object detection
@@ -36,11 +36,11 @@ const Sketch = (p5: P5) => {
         level = new Level();
         dect = new CollisionsController();
         /*for (let index = 0; index < 20; index++) {
-            level.add(new Plataform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
+            level.add(new Platform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
         }*/
-        level.add(new Plataform(50, 500, 100))
-        level.add(new Plataform(500, 500, 100))
-        level.add(new Plataform(5, 100, 50))
+        level.add(new Platform(50, 500, 100))
+        level.add(new Platform(500, 500, 100))
+        level.add(new Platform(5, 100, 50))
         keyController = new KeyController();
         speed = 5;
 
@@ -67,7 +67,7 @@ const Sketch = (p5: P5) => {
 
         // p5.fill("green");
         p5.circle(user.position.x, user.position.y, user.mass);
-        for (const plat of level.getPlataforms()) {
+        for (const plat of level.getPlatforms()) {
             p5.fill(p5.color(plat.color));
             p5.rect(plat.pointBox.x, plat.pointBox.y, plat.widthBox, plat.heightBox);
         }

@@ -1,11 +1,11 @@
-import { BoundingBox } from "./BoundingBox";
-import { Vector } from "./Player";
+import { BoundingBox } from "./bounding-box.model";
+import { Vector } from "./vector.model";
 
-export class Plataform implements BoundingBox {
+export class Platform implements BoundingBox {
     pointBox: Vector;
     widthBox: number;
-    readonly heightBox: number = 10;
     color: string;
+    readonly heightBox: number = 10;
 
     constructor(posX: number, posY: number, dim: number) {
         this.pointBox = new Vector(posX, posY);
@@ -17,7 +17,7 @@ export class Plataform implements BoundingBox {
         this.color = color;
     }
 
-    setPos(posX: number, posY: number, dim: number) {
+    setPosition(posX: number, posY: number, dim: number) {
         this.pointBox = new Vector(posX, posY);
         this.widthBox = dim;
     }
