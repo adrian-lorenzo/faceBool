@@ -17,9 +17,8 @@ export class Platform implements BoundingBox {
         this.color = color;
     }
 
-    setPosition(posX: number, posY: number, dim: number) {
+    setPosition(posX: number, posY: number) {
         this.pointBox = new Vector(posX, posY);
-        this.widthBox = dim;
     }
 
 }

@@ -1,11 +1,13 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import P5 from "p5";
+import { CollisionsController } from "../controllers/collision.controller";
+import { KeyController } from "../controllers/key.controller";
+import { Level } from "../models/level.model";
+import { Platform } from "../models/platform.model";
+import { Player } from "../models/player.model";
+import { Vector } from "../models/vector.model";
 import FaceDetectionService from "../services/FaceDetectionService";
-import { CollisionsController } from "./CollisionsController";
-import { KeyController } from "./KeyController";
-import { Level } from "./Level";
-import { Platform } from "./Plataform";
-import { Player, Vector } from "./Player";
+
 
 const Sketch = (p5: P5) => {
     const faceDetectionService = new FaceDetectionService();
@@ -61,7 +63,8 @@ const Sketch = (p5: P5) => {
         if (detection) {
             // drawBoundingBox(detection);
             const points = detection.landmarks.positions
-            userPlatform.setPos(points[0].x, points[0].y, points[16].x - points[0].x)
+            userPlatform.setPosition(points[0].x, points[0].y)
+            userPlatform.widthBox = points[16].x - points[0].x;
 
         }
 
@@ -78,7 +81,7 @@ const Sketch = (p5: P5) => {
         user.fall();
         user.update();
         move();
-        dect.detectionByRectangles(user, level);
+        dect.detectionByRectangles(user, level.getPlatforms());
         user.checkEdges(p5.width, p5.height);
 
         p5.fill(p5.color(userPlatform.color));
