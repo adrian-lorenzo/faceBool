@@ -132,19 +132,19 @@ const Sketch = (p5: P5) => {
     }
 
 
-    const drawBoundingBox = (detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68>) => {
-        let points = detection.landmarks.positions;
-        for (let i = 0; i < points.length; i++) {
-            p5.stroke(255, 0, 0);
-            p5.strokeWeight(10);
-            p5.point(points[i].x, points[i].y);
-        }
+    // const drawBoundingBox = (detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68>) => {
+    //     let points = detection.landmarks.positions;
+    //     for (let i = 0; i < points.length; i++) {
+    //         p5.stroke(255, 0, 0);
+    //         p5.strokeWeight(10);
+    //         p5.point(points[i].x, points[i].y);
+    //     }
 
-        let box = detection.alignedRect.box;
+    //     let box = detection.alignedRect.box;
 
-        p5.noFill();
-        p5.rect(box.x, box.y, box.width, box.height);
-    }
+    //     p5.noFill();
+    //     p5.rect(box.x, box.y, box.width, box.height);
+    // }
 }
 
 export default Sketch;
