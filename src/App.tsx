@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import './styles/App.scss';
 import p5 from 'p5';
+import React, { useEffect } from 'react';
 import Sketch from './components/Sketch';
+import './styles/App.scss';
 
 const App: React.FC = () => {
   const sketchRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
