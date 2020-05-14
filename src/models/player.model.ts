@@ -6,7 +6,7 @@ export class Player implements BoundingBox {
     velocity: Vector;
     acceleration: Vector;
     mass: number;
-    readonly gravity: Vector = new Vector(0, 9.8);
+    readonly gravity: Vector  = new Vector(0, 9.8);
     readonly maxSpeed: number = 12;
     canJump: boolean;
     pointBox: Vector;
@@ -14,14 +14,14 @@ export class Player implements BoundingBox {
     heightBox: number;
 
     constructor(posX: number, posY: number, mass: number) {
-        this.position = new Vector(posX, posY);
-        this.mass = mass;
-        this.velocity = new Vector(0, 0);
+        this.position     = new Vector(posX, posY);
+        this.mass         = mass;
+        this.velocity     = new Vector(0, 0);
         this.acceleration = new Vector(0, 0);
-        this.canJump = false;
-        this.pointBox = new Vector(posX - mass / 2, posY - mass / 2);
-        this.widthBox = mass;
-        this.heightBox = mass;
+        this.canJump      = false;
+        this.pointBox     = new Vector(posX - mass / 2, posY - mass / 2);
+        this.widthBox     = mass;
+        this.heightBox    = mass;
     }
 
     fall() {

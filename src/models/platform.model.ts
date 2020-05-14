@@ -5,12 +5,13 @@ export class Platform implements BoundingBox {
     pointBox: Vector;
     widthBox: number;
     color: string;
-    readonly heightBox: number = 10;
+    heightBox: number;
 
-    constructor(posX: number, posY: number, dim: number) {
-        this.pointBox = new Vector(posX, posY);
-        this.widthBox = dim;
-        this.color = "blank";
+    constructor(posX: number, posY: number, width: number, height:number) {
+        this.pointBox  = new Vector(posX, posY);
+        this.widthBox  = width;
+        this.heightBox = height
+        this.color     = "blank";
     }
 
     changeColor(color: string) {
