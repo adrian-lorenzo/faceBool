@@ -41,10 +41,10 @@ const Sketch = (p5: P5) => {
         /*for (let index = 0; index < 20; index++) {
             level.add(new Platform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
         }*/
-        level.add(new Platform(50, 700, 100, 30))
-        level.add(new Platform(300, 600, 30, 100))
-        level.add(new Platform(500, 700, 100,30))
-        level.add(new Platform(20, 100, 50, 30))
+        level.add(new Platform(50,  300, 100, 30))
+        level.add(new Platform(300, 300, 30, 100))
+        level.add(new Platform(500, 300, 100,30))
+        level.add(new Platform(20,  100, 50, 30))
 
         keyController = new KeyController();
         speed = 5;
@@ -63,12 +63,13 @@ const Sketch = (p5: P5) => {
     p5.draw = () => {
         // MARK: - Code for object detection
         p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
-        p5.background("black");
+        //p5.background("black");
         if (detection) {
-            // drawBoundingBox(detection);
+            //drawBoundingBox(detection);
             const points = detection.landmarks.positions
             userPlatform.setPosition(points[0].x, points[0].y)
             userPlatform.widthBox = points[16].x - points[0].x;
+            userPlatform.heightBox = 20;
             /*userPlatform.setPosition(p5.mouseX, p5.mouseY);
             userPlatform.widthBox  = 100;
             userPlatform.heightBox = 30;*/
@@ -88,7 +89,7 @@ const Sketch = (p5: P5) => {
         player.checkEdges(p5.width, p5.height);
 
         p5.fill(p5.color(userPlatform.color));
-        p5.rect(userPlatform.pointBox.x, userPlatform.pointBox.y, userPlatform.widthBox, userPlatform.heightBox);
+        //p5.rect(userPlatform.pointBox.x, userPlatform.pointBox.y, userPlatform.widthBox, userPlatform.heightBox);
         if (detection) level.removeLast();
     }
 
@@ -107,21 +108,17 @@ const Sketch = (p5: P5) => {
                     case Direction.Up:
                         player.position.y = collision.py - player.mass / 2;
                         player.canJump    = true;
-                        //console.log("Up");
                         break;
                     case Direction.Down:
                         player.velocity.y *= -1;  
-                        //console.log("Down");
                         break;
                     case Direction.Left:
                         player.position.x = collision.px - player.mass/2.;
                         player.velocity.x *= -1;
-                        //console.log("Lados");
                         break;
                     case Direction.Right:
                         player.position.x = collision.px + player.mass/2.;
                         player.velocity.x *= -1;
-                        //console.log("Lados");
                         break;
                     default:
                         break;
@@ -178,19 +175,17 @@ const Sketch = (p5: P5) => {
     }
 
 
-    // const drawBoundingBox = (detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68>) => {
-    //     let points = detection.landmarks.positions;
-    //     for (let i = 0; i < points.length; i++) {
-    //         p5.stroke(255, 0, 0);
-    //         p5.strokeWeight(10);
-    //         p5.point(points[i].x, points[i].y);
-    //     }
-
-    //     let box = detection.alignedRect.box;
-
-    //     p5.noFill();
-    //     p5.rect(box.x, box.y, box.width, box.height);
-    // }
+    /*const drawBoundingBox = (detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68>) => {
+        let points = detection.landmarks.positions;
+        for (let i = 0; i < points.length; i++) {
+            p5.stroke(255, 0, 0);
+            p5.strokeWeight(10);
+            p5.point(points[i].x, points[i].y);
+        }
+        let box = detection.alignedRect.box;
+        p5.noFill();
+        p5.rect(box.x, box.y, box.width, box.height);
+    }*/
 }
 
 export default Sketch;

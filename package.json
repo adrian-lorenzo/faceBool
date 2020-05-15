@@ -16,7 +16,7 @@
     "caller-path": "^3.0.0",
     "face-api.js": "^0.22.2",
     "ngx-face-api-js": "^0.1.1",
-    "node-sass": "^4.14.0",
+    "node-sass": "^4.14.1",
     "p5": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

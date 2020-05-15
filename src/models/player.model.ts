@@ -74,8 +74,9 @@ export class Player {
         }
 
         if (this.position.y > height) {
-            this.position.y = height;
-            this.canJump = true;
+            this.stop();
+            this.position.x = 50;
+            this.position.y = 50;
         } else if (this.position.y < 0) {
             this.position.y = 0;
             this.velocity.y *= -1;
