@@ -1,6 +1,6 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import P5 from "p5";
-import { CollisionsController } from "../controllers/collision.controller";
+import { CollisionsController, CollisionsInformation } from "../controllers/collision.controller";
 import { KeyController } from "../controllers/key.controller";
 import { Level } from "../models/level.model";
 import { Platform } from "../models/platform.model";
@@ -8,6 +8,7 @@ import { Player } from "../models/player.model";
 import { Vector } from "../models/vector.model";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { BoundingBox } from "../models/bounding-box.model";
+import { Direction } from "../controllers/collision.controller";
 
 
 const Sketch = (p5: P5) => {
@@ -40,10 +41,11 @@ const Sketch = (p5: P5) => {
         /*for (let index = 0; index < 20; index++) {
             level.add(new Platform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
         }*/
-        level.add(new Platform(50, 600, 100, 30))
-        level.add(new Platform(500, 600, 100,30))
-        level.add(new Platform(5, 100, 50, 30))
-        level.add(new Platform(600, 700, 30, 100))
+        level.add(new Platform(50, 700, 100, 30))
+        level.add(new Platform(300, 600, 30, 100))
+        level.add(new Platform(500, 700, 100,30))
+        level.add(new Platform(20, 100, 50, 30))
+
         keyController = new KeyController();
         speed = 5;
 
@@ -64,19 +66,14 @@ const Sketch = (p5: P5) => {
         p5.background("black");
         if (detection) {
             // drawBoundingBox(detection);
-            //const points = detection.landmarks.positions
-            //userPlatform.setPosition(points[0].x, points[0].y)
-            //userPlatform.widthBox = points[16].x - points[0].x;
-            userPlatform.setPosition(p5.mouseX, p5.mouseY);
+            const points = detection.landmarks.positions
+            userPlatform.setPosition(points[0].x, points[0].y)
+            userPlatform.widthBox = points[16].x - points[0].x;
+            /*userPlatform.setPosition(p5.mouseX, p5.mouseY);
             userPlatform.widthBox  = 100;
-            userPlatform.heightBox = 30;
-            dect.detectionByRectangles(player, userPlatform);
-
+            userPlatform.heightBox = 30;*/
+            level.add(userPlatform);
         }
-        userPlatform.setPosition(p5.mouseX, p5.mouseY);
-        userPlatform.widthBox  = 100;
-        userPlatform.heightBox = 30;
-        level.add(userPlatform);
         p5.fill("green");
         p5.circle(player.position.x, player.position.y, player.mass);
         for (const plat of level.getPlatforms()) {
@@ -84,7 +81,6 @@ const Sketch = (p5: P5) => {
             p5.rect(plat.pointBox.x, plat.pointBox.y, plat.widthBox, plat.heightBox);
             debugBoundingBox(plat);
         }
-        debugBoundingBox(player);
         player.fall();
         player.update();
         move();
@@ -93,7 +89,7 @@ const Sketch = (p5: P5) => {
 
         p5.fill(p5.color(userPlatform.color));
         p5.rect(userPlatform.pointBox.x, userPlatform.pointBox.y, userPlatform.widthBox, userPlatform.heightBox);
-        level.removeLast();
+        if (detection) level.removeLast();
     }
 
     function debugBoundingBox(object:BoundingBox) {
@@ -105,26 +101,30 @@ const Sketch = (p5: P5) => {
 
     function detectCollisions() {
         for (const platform of level.getPlatforms()) {
-            if(dect.detectionByRectangles(player, platform)){
-                if (player.pointBox.y < platform.pointBox.y &&
-                    (
-                        (player.pointBox.x > platform.pointBox.x && player.pointBox.x < platform.pointBox.x + platform.widthBox) ||
-                        (player.pointBox.x + player.widthBox > platform.pointBox.x && player.pointBox.x + player.widthBox < platform.pointBox.x + platform.widthBox)
-                    )
-                ) {
-                    player.canJump = true;
-                    player.pointBox.y = platform.pointBox.y - player.heightBox;
-                    player.position.y = platform.pointBox.y - player.mass / 2;
-                } else {
-                    if ((platform.pointBox.x <= player.pointBox.x && player.pointBox.x <= platform.pointBox.x + platform.widthBox)   &&
-                        (platform.pointBox.x <= player.pointBox.x && player.pointBox.x <= platform.pointBox.x + platform.widthBox)   && 
-                        (platform.pointBox.y <= player.pointBox.y && player.pointBox.y <= platform.pointBox.y + platform.heightBox ) &&
-                        !(platform.pointBox.y <= player.pointBox.y + player.heightBox && player.pointBox.y + player.heightBox <= platform.pointBox.y + platform.heightBox )) {
-                        player.velocity.y *= -1;   
-                    } else {
-                        console.log("madre mia")
+            let collision:CollisionsInformation = dect.detectionCirculesAndRectangles(player, platform);
+            if (collision.isCollisions) {
+                switch (collision.direction) {
+                    case Direction.Up:
+                        player.position.y = collision.py - player.mass / 2;
+                        player.canJump    = true;
+                        //console.log("Up");
+                        break;
+                    case Direction.Down:
+                        player.velocity.y *= -1;  
+                        //console.log("Down");
+                        break;
+                    case Direction.Left:
+                        player.position.x = collision.px - player.mass/2.;
                         player.velocity.x *= -1;
-                    }
+                        //console.log("Lados");
+                        break;
+                    case Direction.Right:
+                        player.position.x = collision.px + player.mass/2.;
+                        player.velocity.x *= -1;
+                        //console.log("Lados");
+                        break;
+                    default:
+                        break;
                 }
                 platform.changeColor("red");
                 break;

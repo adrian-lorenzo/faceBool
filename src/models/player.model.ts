@@ -1,17 +1,13 @@
-import { BoundingBox } from "./bounding-box.model";
 import { Vector } from "./vector.model";
 
-export class Player implements BoundingBox {
+export class Player {
     position: Vector;
     velocity: Vector;
     acceleration: Vector;
     mass: number;
     readonly gravity: Vector  = new Vector(0, 9.8);
-    readonly maxSpeed: number = 12;
+    readonly maxSpeed: number = 10;
     canJump: boolean;
-    pointBox: Vector;
-    widthBox: number;
-    heightBox: number;
 
     constructor(posX: number, posY: number, mass: number) {
         this.position     = new Vector(posX, posY);
@@ -19,9 +15,6 @@ export class Player implements BoundingBox {
         this.velocity     = new Vector(0, 0);
         this.acceleration = new Vector(0, 0);
         this.canJump      = false;
-        this.pointBox     = new Vector(posX - mass / 2, posY - mass / 2);
-        this.widthBox     = mass;
-        this.heightBox    = mass;
     }
 
     fall() {
@@ -64,7 +57,6 @@ export class Player implements BoundingBox {
         this.velocity.add(this.acceleration);
         this.controllSpeed();
         this.position.add(this.velocity);
-        this.pointBox = new Vector(this.position.x - this.mass / 2, this.position.y - this.mass / 2)
         this.acceleration.mult(0);
     }
 
@@ -73,23 +65,19 @@ export class Player implements BoundingBox {
     }
 
     checkEdges(width: number, height: number) {
-        if (this.position.x + this.widthBox > width) {
-            this.position.x = width - this.mass;
-            this.pointBox.x = width;
+        if (this.position.x  > width) {
+            this.position.x = width;
             this.velocity.x *= -1;
         } else if (this.position.x < 0) {
             this.position.x = 0;
-            this.pointBox.x = 0;
             this.velocity.x *= -1;
         }
 
-        if (this.pointBox.y + this.heightBox > height) {
-            this.position.y = height - this.mass / 2;
-            this.pointBox.y = height - this.heightBox;
+        if (this.position.y > height) {
+            this.position.y = height;
             this.canJump = true;
         } else if (this.position.y < 0) {
             this.position.y = 0;
-            this.pointBox.y = 0;
             this.velocity.y *= -1;
         }
 

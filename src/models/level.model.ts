@@ -12,7 +12,7 @@ export class Level {
     }
 
     removeLast(){
-        this.plataforms.slice(-1,1)
+        this.plataforms.splice(-1,1)
     }
 
     getPlatforms(): Array<Platform> {
