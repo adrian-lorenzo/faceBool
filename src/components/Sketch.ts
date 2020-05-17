@@ -102,7 +102,7 @@ const Sketch = (p5: P5) => {
 
     function detectCollisions() {
         for (const platform of level.getPlatforms()) {
-            let collision:CollisionsInformation = dect.detectionCirculesAndRectangles(player, platform);
+            let collision: CollisionsInformation = dect.detectionCirculesAndRectangles(player, platform);
             if (collision.isCollisions) {
                 switch (collision.direction) {
                     case Direction.Up:
