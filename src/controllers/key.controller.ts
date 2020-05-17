@@ -4,7 +4,7 @@ export class KeyController {
         this.keys = new Map<string, boolean>();
     }
 
-    putKey(key: string, activated: boolean) {
+    addKey(key: string, activated: boolean) {
         this.keys.set(key, activated);
     }
 

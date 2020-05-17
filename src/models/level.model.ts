@@ -11,6 +11,10 @@ export class Level {
         this.plataforms.push(plataform);
     }
 
+    removeLast(){
+        this.plataforms.splice(-1,1)
+    }
+
     getPlatforms(): Array<Platform> {
         return this.plataforms
     }
