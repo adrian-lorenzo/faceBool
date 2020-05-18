@@ -1,14 +1,13 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import P5 from "p5";
-import { CollisionsController, CollisionsInformation } from "../controllers/collision.controller";
+import { CollisionsController, CollisionsInformation, Direction } from "../controllers/collision.controller";
 import { KeyController } from "../controllers/key.controller";
+import { BoundingBox } from "../models/bounding-box.model";
 import { Level } from "../models/level.model";
 import { Platform } from "../models/platform.model";
 import { Player } from "../models/player.model";
 import { Vector } from "../models/vector.model";
 import FaceDetectionService from "../services/FaceDetectionService";
-import { BoundingBox } from "../models/bounding-box.model";
-import { Direction } from "../controllers/collision.controller";
 
 
 const Sketch = (p5: P5) => {
@@ -22,7 +21,7 @@ const Sketch = (p5: P5) => {
     let speed: number;
 
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
-    let userPlatform: Platform = new Platform(0, 0, 0,0)
+    let userPlatform: Platform = new Platform(0, 0, 0, 0)
 
     p5.setup = () => {
         // MARK: - Code for object detection
@@ -35,20 +34,19 @@ const Sketch = (p5: P5) => {
 
 
         // p5.createCanvas(1000, 700);
-        player  = new Player(50, 50, 30);
+        player = new Player(50, 50, 30);
         level = new Level();
-        dect  = new CollisionsController();
+        dect = new CollisionsController();
         /*for (let index = 0; index < 20; index++) {
             level.add(new Platform(p5.random(0,p5.width), p5.random(0,p5.height), p5.random(100,200)))
         }*/
-        level.add(new Platform(50,  300, 100, 30))
+        level.add(new Platform(50, 300, 100, 30))
         level.add(new Platform(300, 300, 30, 100))
-        level.add(new Platform(500, 300, 100,30))
-        level.add(new Platform(20,  100, 50, 30))
+        level.add(new Platform(500, 300, 100, 30))
+        level.add(new Platform(20, 100, 50, 30))
 
         keyController = new KeyController();
         speed = 5;
-
         setInterval(() => {
             faceDetectionService.getFace(videoCapture.elt, dimensions).then(res => detection = res)
         }, 500)
@@ -62,12 +60,19 @@ const Sketch = (p5: P5) => {
 
     p5.draw = () => {
         // MARK: - Code for object detection
+
+        // p5.image(videoCapture, 0, 0, dimensions.width / 2, dimensions.height);
+        p5.push()
+        p5.translate(dimensions.width, 0)
+        p5.scale(-1.0, 1.0);
         p5.image(videoCapture, 0, 0, dimensions.width, dimensions.height);
+        p5.pop()
+        // p5.filter("invert")
         //p5.background("black");
         if (detection) {
             //drawBoundingBox(detection);
             const points = detection.landmarks.positions
-            userPlatform.setPosition(points[0].x, points[0].y)
+            userPlatform.setPosition(dimensions.width - points[16].x, points[16].y)
             userPlatform.widthBox = points[16].x - points[0].x;
             userPlatform.heightBox = 20;
             /*userPlatform.setPosition(p5.mouseX, p5.mouseY);
@@ -93,7 +98,7 @@ const Sketch = (p5: P5) => {
         if (detection) level.removeLast();
     }
 
-    function debugBoundingBox(object:BoundingBox) {
+    function debugBoundingBox(object: BoundingBox) {
         p5.noFill();
         p5.stroke(255, 0, 255);
         p5.rect(object.pointBox.x, object.pointBox.y, object.widthBox, object.heightBox);
@@ -107,17 +112,17 @@ const Sketch = (p5: P5) => {
                 switch (collision.direction) {
                     case Direction.Up:
                         player.position.y = collision.py - player.mass / 2;
-                        player.canJump    = true;
+                        player.canJump = true;
                         break;
                     case Direction.Down:
-                        player.velocity.y *= -1;  
+                        player.velocity.y *= -1;
                         break;
                     case Direction.Left:
-                        player.position.x = collision.px - player.mass/2.;
+                        player.position.x = collision.px - player.mass / 2.;
                         player.velocity.x *= -1;
                         break;
                     case Direction.Right:
-                        player.position.x = collision.px + player.mass/2.;
+                        player.position.x = collision.px + player.mass / 2.;
                         player.velocity.x *= -1;
                         break;
                     default:
@@ -126,7 +131,7 @@ const Sketch = (p5: P5) => {
                 platform.changeColor("red");
                 break;
             } else {
-                player.canJump = false; 
+                player.canJump = false;
                 platform.changeColor("width");
             }
         }
