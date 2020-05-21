@@ -73,7 +73,9 @@ const Sketch = (p5: P5) => {
 
         // Detection runtime
         if (isDetecting === false) {
-            faceDetectionService.getFace(videoCapture.elt, dimensions).then(res => { detection = res; isDetecting = false }).catch(_ => isDetecting = false);
+            faceDetectionService.getFace(videoCapture.elt, dimensions)
+                .then(res => detection = res)
+                .finally(() => isDetecting = false )
             isDetecting = true;
         }
 
