@@ -16,6 +16,7 @@ const Sketch = (p5: P5) => {
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
     let oldPosition: Matter.Vector = { x: 0,  y: 0 };
+    let isDetecting = false;
     
     // MARK: - Physics engine constants
     let engine = Engine.create(); 
@@ -71,7 +72,11 @@ const Sketch = (p5: P5) => {
         p5.pop();
 
         // Detection runtime
-        faceDetectionService.getFace(videoCapture.elt, dimensions).then(res => detection = res);
+        if (isDetecting === false) {
+            faceDetectionService.getFace(videoCapture.elt, dimensions).then(res => { detection = res; isDetecting = false });
+            isDetecting = true;
+        }
+
         if (detection) {
             const points = detection.landmarks.positions;
             const position = points[28];

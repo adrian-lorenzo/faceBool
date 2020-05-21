@@ -1,16 +1,24 @@
-//import * as canvasz from 'canvas';
+// eslint-disable-next-line
+import * as tf from "@tensorflow/tfjs-node"; //Needed to improve performance
 
-import { nets, detectSingleFace, TNetInput, resizeResults, IDimensions, Point } from "face-api.js"; // env, TResolvedNetInput, tf, Box } 
+import { nets, detectSingleFace, TNetInput, resizeResults, IDimensions, Point, env, TinyFaceDetectorOptions } from "face-api.js"
 
 export default class FaceDetectionService {
     constructor() {
-        //env.monkeyPatch(canvasz as any);
-        nets.ssdMobilenetv1.loadFromUri('/models');
-        nets.faceLandmark68Net.loadFromUri('/models');
+        env.monkeyPatch({
+            Canvas: HTMLCanvasElement,
+            Image: HTMLImageElement,
+            ImageData: ImageData,
+            Video: HTMLVideoElement,
+            createCanvasElement: () => document.createElement('canvas'),
+            createImageElement: () => document.createElement('img')
+        })
+        nets.tinyFaceDetector.loadFromUri('/models');
+        nets.faceLandmark68TinyNet.loadFromUri('/models');
     } 
 
     async getFace(input: TNetInput, dimensions: IDimensions) {
-        let detection = await detectSingleFace(input).withFaceLandmarks();
+        let detection = await detectSingleFace(input, new TinyFaceDetectorOptions()).withFaceLandmarks(true);
 
         if (detection) {
             const origin = new Point(dimensions.width/2, dimensions.height/2);
