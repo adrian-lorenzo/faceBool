@@ -1,7 +1,6 @@
 // eslint-disable-next-line
-import * as tf from "@tensorflow/tfjs-node"; //Needed to improve performance
+import { detectSingleFace, env, IDimensions, nets, Point, resizeResults, TNetInput } from "face-api.js";
 
-import { nets, detectSingleFace, TNetInput, resizeResults, IDimensions, Point, env, TinyFaceDetectorOptions } from "face-api.js"
 
 export default class FaceDetectionService {
     constructor() {
@@ -13,15 +12,14 @@ export default class FaceDetectionService {
             createCanvasElement: () => document.createElement('canvas'),
             createImageElement: () => document.createElement('img')
         })
-        nets.tinyFaceDetector.loadFromUri('/models');
-        nets.faceLandmark68TinyNet.loadFromUri('/models');
-    } 
+        nets.ssdMobilenetv1.loadFromUri('/models');
+        nets.faceLandmark68Net.loadFromUri('/models');
+    }
 
-    async getFace(input: TNetInput, dimensions: IDimensions) {
-        let detection = await detectSingleFace(input, new TinyFaceDetectorOptions()).withFaceLandmarks(true);
-
+    async getFace(input: TNetInput, dimensions: IDimensions): Promise<any | any> {
+        let detection = await detectSingleFace(input).withFaceLandmarks().run();
         if (detection) {
-            const origin = new Point(dimensions.width/2, dimensions.height/2);
+            const origin = new Point(dimensions.width / 2, dimensions.height / 2);
             detection = resizeResults(detection, { width: dimensions.width, height: dimensions.height });
             for (let index = 0; index < detection.landmarks.positions.length; index++) {
                 detection.landmarks.positions[index] = flipPoint(detection.landmarks.positions[index], origin);
@@ -33,8 +31,8 @@ export default class FaceDetectionService {
     }
 }
 
-function flipPoint(vector: Point, origin: Point): Point{
+function flipPoint(vector: Point, origin: Point): Point {
     vector = vector.sub(origin);
-    vector = vector.mul({x: -1, y: 1});
+    vector = vector.mul({ x: -1, y: 1 });
     return vector.add(origin);
 }
