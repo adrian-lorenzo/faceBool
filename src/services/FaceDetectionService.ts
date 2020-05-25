@@ -1,4 +1,6 @@
 // eslint-disable-next-line
+import * as tf from "@tensorflow/tfjs-node"; // PLEASE DO NOT DELETE. Needed to improve performance.
+
 import { detectSingleFace, env, IDimensions, nets, Point, resizeResults, TNetInput } from "face-api.js";
 
 
