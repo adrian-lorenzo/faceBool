@@ -5,6 +5,8 @@ import { detectSingleFace, env, IDimensions, nets, Point, resizeResults, TNetInp
 
 
 export default class FaceDetectionService {
+    modelsLoaded: boolean = false
+
     constructor() {
         env.monkeyPatch({
             Canvas: HTMLCanvasElement,
@@ -14,11 +16,14 @@ export default class FaceDetectionService {
             createCanvasElement: () => document.createElement('canvas'),
             createImageElement: () => document.createElement('img')
         })
-        nets.ssdMobilenetv1.loadFromUri('/models');
-        nets.faceLandmark68Net.loadFromUri('/models');
     }
 
-    async getFace(input: TNetInput, dimensions: IDimensions): Promise<any | any> {
+    async loadModels() {
+        await nets.ssdMobilenetv1.loadFromUri('/models');
+        await nets.faceLandmark68Net.loadFromUri('/models');
+    }
+
+    async getFace(input: TNetInput, dimensions: IDimensions) {
         let detection = await detectSingleFace(input).withFaceLandmarks().run();
         if (detection) {
             const origin = new Point(dimensions.width / 2, dimensions.height / 2);

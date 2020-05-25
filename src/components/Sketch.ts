@@ -40,32 +40,35 @@ const Sketch = (p5: P5) => {
             y: 0
         },
         {
-            width: relWidth(0.4),
-            height: relWidth(0.05)
+            width: relWidth(0.38),
+            height: relWidth(0.048)
         }
     );
 
     let platforms = [
         new Platform(
             { 
-                x: relWidth(0.05), 
+                x: relWidth(0.1), 
                 y: relHeight(0.3)
             },
             {
-                width: relWidth(0.1), 
+                width: relWidth(0.2), 
                 height: relWidth(0.05)
-            }
+            },
+            p5.QUARTER_PI
         ),
 
         new Platform(
             {
-                x: relWidth(0.2), 
-                y: relWidth(0.4)
+                x: relWidth(0.3), 
+                y: relWidth(0.5)
             },
             {
-                width: relWidth(0.1), 
+                width: relWidth(0.15), 
                 height: relWidth(0.05)
-            }),
+            },
+            p5.QUARTER_PI / 2
+        ),
 
         new Platform(
             {
@@ -136,12 +139,14 @@ const Sketch = (p5: P5) => {
         World.add(engine.world, player.entity);
         World.add(engine.world, platforms.map((platform) => platform.entity));
         World.add(engine.world, userPlatform.entity);
-
         subscribeActions();
 
-        Engine.run(engine)
-
-        setTimeout(() => { isDetecting = false }, 6000)
+        faceDetectionService.loadModels();
+        
+        setTimeout(() => {
+            Engine.run(engine);
+            isDetecting = false;
+        }, 4000)
     }
 
     p5.draw = () => {

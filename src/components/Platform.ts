@@ -9,9 +9,10 @@ export default class Platform implements Entity {
     entity: Matter.Body
     dimensions: Size
 
-    constructor(pos: Matter.Vector, dimensions: Size) {
+    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0) {
         this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
-            isStatic: true
+            isStatic: true,
+            angle: angle
         });
 
         this.dimensions = dimensions;
