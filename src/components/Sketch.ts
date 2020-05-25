@@ -22,30 +22,32 @@ const Sketch = (p5: P5) => {
     let engine = Engine.create();
 
     // Ball
-    let player = Bodies.circle(50, 50, 30, {
+    let player = Bodies.circle(0.05 * dimensions.width, 0.05 * dimensions.width, 0.02 * dimensions.width, {
         id: 0,
-        density: 0.1,
-        friction: 0.3,
+        density: 0.0001,
+        friction: 0.5,
         frictionStatic: 0,
-        frictionAir: 0.02,
+        frictionAir: 0.05,
         restitution: 0.5
     });
 
     //Platforms
-    let userPlatform = Bodies.rectangle(0, 0, 500, 30, { isStatic: true });
+    let userPlatform = Bodies.rectangle(0, 0, 0.4 * dimensions.width, 0.05 * dimensions.height, { isStatic: true });
     let platforms = [
-        Bodies.rectangle(50, 300, 100, 30, { isStatic: true }),
-        Bodies.rectangle(300, 300, 30, 100, { isStatic: true }),
-        Bodies.rectangle(500, 300, 100, 30, { isStatic: true }),
-        Bodies.rectangle(1900, 300, 400, 20, { isStatic: true }),
-        Bodies.rectangle(dimensions.width / 2, (dimensions.height - 40), dimensions.width, 40, { isStatic: true })
+        Bodies.rectangle(0.05 * dimensions.width, 0.3 * dimensions.height, 0.1 * dimensions.width, 0.05 * dimensions.height, { isStatic: true }),
+        Bodies.rectangle(0.2 * dimensions.width, 0.4 * dimensions.height, 0.1 * dimensions.width, 0.05 * dimensions.height, { isStatic: true }),
+        Bodies.rectangle(0.9 * dimensions.width, 0.3 * dimensions.height, 0.3 * dimensions.width, 0.05 * dimensions.height, { isStatic: true }),
+
+
+        Bodies.rectangle(0.5 * dimensions.width, 0.999 * dimensions.height, dimensions.width, 0.01 * dimensions.height, { isStatic: true }),    //floor, walls and ceiling
+        Bodies.rectangle(0.001 * dimensions.width, 0.5 * dimensions.height, 0.01 * dimensions.width, dimensions.height, { isStatic: true }),
+        Bodies.rectangle(0.999 * dimensions.width, 0.5 * dimensions.height, 0.01 * dimensions.width, dimensions.height, { isStatic: true }),
+        Bodies.rectangle(0.5 * dimensions.width, 0.001 * dimensions.height, dimensions.width, 0.01 * dimensions.height, { isStatic: true })
     ];
 
     // App state
     let actions: Map<PlayerAction, Boolean> = new Map();
     let isOnTheGround = true;
-    let detectionCounter = 1;
-    let maxDetectionCounter = 4;
 
 
     p5.setup = () => {
@@ -63,7 +65,7 @@ const Sketch = (p5: P5) => {
 
         Engine.run(engine)
 
-        setTimeout(() => { isDetecting = false }, 5000)
+        setTimeout(() => { isDetecting = false }, 7000)
     }
 
     p5.draw = () => {
@@ -90,17 +92,12 @@ const Sketch = (p5: P5) => {
             ]).finally(() => isDetecting = false)
         }*/
 
-        if (detectionCounter === maxDetectionCounter) detectionCounter = 1;
-        console.log("bucle")
-
-        if (!isDetecting && detectionCounter === 3) {
+        if (!isDetecting) {
             isDetecting = true
             faceDetectionService.getFace(videoCapture.elt, dimensions)
                 .then(res => detection = res)
                 .finally(() => isDetecting = false)
         }
-
-        detectionCounter++;
 
         if (detection) {
             const points = detection.landmarks.positions;
@@ -170,16 +167,16 @@ const Sketch = (p5: P5) => {
             if (actions.get(PlayerAction.Jump) && isOnTheGround) {
                 player.force = {
                     x: 0,
-                    y: -0.5
+                    y: -2
                 };
             }
 
             if (actions.get(PlayerAction.MoveLeft)) {
-                player.torque = -12;
+                player.torque = -2;
             }
 
             if (actions.get(PlayerAction.MoveRight)) {
-                player.torque = 12;
+                player.torque = 2;
             }
         });
 
