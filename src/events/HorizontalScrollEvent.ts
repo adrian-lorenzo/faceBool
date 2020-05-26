@@ -1,5 +1,5 @@
 import Platform from "../components/Platform";
-import {relWidth, relHeight} from "../utils/uiUtils";
+import {relWidth} from "../utils/uiUtils";
 import Ball from "../components/Ball";
 
 export const horizontalScroll = (userPlatform: Platform, platformsArray: Platform[], ball: Ball) => {
