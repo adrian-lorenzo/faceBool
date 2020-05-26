@@ -3,6 +3,7 @@ import { Engine, Events, World } from "matter-js";
 import P5 from "p5";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
+import {horizontalScroll} from "../events/HorizontalScrollEvent";
 import Ball from "./Ball";
 import Platform from "./Platform";
 
@@ -36,12 +37,12 @@ const Sketch = (p5: P5) => {
     //Platforms
     let userPlatform = new Platform(
         {
-            x: 0, 
+            x: 0,
             y: 0
         },
         {
             width: relWidth(0.38),
-            height: relWidth(0.048)
+            height: relHeight(0.048)
         }
     );
 
@@ -53,31 +54,31 @@ const Sketch = (p5: P5) => {
             },
             {
                 width: relWidth(0.2), 
-                height: relWidth(0.05)
+                height: relHeight(0.05)
             },
             p5.QUARTER_PI
         ),
 
         new Platform(
             {
-                x: relWidth(0.3), 
-                y: relWidth(0.5)
+                x: relWidth(0.25),
+                y: relHeight(0.6)
             },
             {
                 width: relWidth(0.15), 
-                height: relWidth(0.05)
+                height: relHeight(0.05)
             },
             p5.QUARTER_PI / 2
         ),
 
         new Platform(
             {
-                x: relWidth(0.9), 
-                y: relWidth(0.3)
+                x: relWidth(0.9),
+                y: relHeight(0.4)
             },
             {
-                width: relWidth(0.3), 
-                height: relWidth(0.05)
+                width: relWidth(0.3),
+                height: relHeight(0.05)
             }
         ),
 
@@ -85,42 +86,31 @@ const Sketch = (p5: P5) => {
         new Platform(
             {
                 x: relWidth(0.5), 
-                y: relWidth(0.999)
+                y: relHeight(0.999)
             }, 
             {
                 width: relWidth(1), 
-                height: relWidth(0.01)
+                height: relHeight(0.01)
             }
         ),
         new Platform(
             {
                 x: relWidth(0.001), 
-                y: relWidth(0.5)
+                y: relHeight(0.5)
             },
             {
                 width: relWidth(0.01), 
                 height: relHeight(1)
             }
         ),
-
-        new Platform(
-            {
-                x: relWidth(0.999),  
-                y: relWidth(0.5)
-            },
-            {
-                width: relWidth(0.01),
-                height: relHeight(1)
-            }
-        ),
         new Platform(
             {
                 x: relWidth(0.5),  
-                y: relWidth(0.001)
+                y: relHeight(0.001)
             },
             {
                 width: relWidth(1),
-                height: relWidth(0.01)
+                height: relHeight(0.01)
             }
         )
     ];
@@ -228,6 +218,10 @@ const Sketch = (p5: P5) => {
         Events.on(engine, "collisionStart", (event) => {
             if (event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) {
                 player.isOnGround = true;
+            }
+            if ((event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) &&
+                player.getPosition().x > relWidth(0.9)) {
+                horizontalScroll(userPlatform, platforms, player);
             }
         });
     }
