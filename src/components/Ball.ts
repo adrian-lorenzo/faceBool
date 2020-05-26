@@ -1,5 +1,5 @@
 import Entity from "./Entity";
-import { Bodies } from "matter-js";
+import { Bodies, Body } from "matter-js";
 import P5 from "p5";
 import { getUniqueIdentifier } from "../utils/uiUtils";
 
@@ -42,6 +42,14 @@ export default class Ball implements Entity {
 
     moveLeft() {
         this.entity.torque = -this.torque
+    }
+
+    translate(position: Matter.Vector) {
+        Body.translate(this.entity, position);
+    }
+
+    getPosition(){
+        return this.entity.position;
     }
 
     jump() {
