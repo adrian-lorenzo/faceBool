@@ -19,8 +19,8 @@ export default class Ball implements Entity {
             frictionAir: 0.02,
             restitution: 0.8
         });
-        this.torque = radius * 30
-        this.jumpForce = -radius * 8
+        this.torque = radius * 25
+        this.jumpForce = -radius * 5
     }
 
     draw(p5: P5) {

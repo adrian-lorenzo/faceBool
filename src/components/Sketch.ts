@@ -19,10 +19,12 @@ const Sketch = (p5: P5) => {
     const faceDetectionService = new FaceDetectionService();
     const handDetectionService = new HandDetectionService();
     let videoCapture: P5.Element;
-    let dimensions = { width: window.innerWidth, height: window.innerHeight };
+    //let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let handDetection: { [key: string]: [number, number, number][] };
-    let oldPosition: Matter.Vector = { x: 0, y: 0 };
-    let isDetecting = true;
+    let faceDetection: [number, number, number][]
+    //let oldPosition: Matter.Vector = { x: 0, y: 0 };
+    let isDetecting = false;
+    let currentFrameRate = 30;
 
     // MARK: - Physics engine constants
     let engine = Engine.create();
@@ -57,8 +59,8 @@ const Sketch = (p5: P5) => {
             {
                 width: relWidth(0.2),
                 height: relHeight(0.05)
-            },
-            p5.QUARTER_PI
+            }
+            //p5.QUARTER_PI
         ),
 
         new Platform(
@@ -132,25 +134,21 @@ const Sketch = (p5: P5) => {
         World.add(engine.world, platforms.map((platform) => platform.entity));
         World.add(engine.world, userPlatform.entity);
         subscribeActions();
-
-        faceDetectionService.loadModels();
-
-        setTimeout(() => {
-            Engine.run(engine);
-            isDetecting = false;
-        }, 4000)
+        p5.frameRate(currentFrameRate);
     }
 
     p5.draw = () => {
         // Environment
+        Engine.update(engine, 1000/currentFrameRate);
         drawBackground();
         drawPlatforms();
         player.draw(p5);
+
+        drawDetection();
     }
 
-
     p5.windowResized = () => {
-        dimensions = { width: window.innerWidth, height: window.innerHeight };
+        //dimensions = { width: window.innerWidth, height: window.innerHeight };
         p5.resizeCanvas(relWidth(1), relHeight(1));
     }
 
@@ -184,6 +182,54 @@ const Sketch = (p5: P5) => {
         }
     }
 
+    function drawDetection() {
+        if (handDetection) {
+            // const points = Array(50).fill({ x: 20, y: 30 })
+            // const position = points[28];
+            const scaleX = window.innerWidth / handDetectionService.imageSize.width;
+            const scaleY = window.innerHeight / handDetectionService.imageSize.height;
+
+            handDetection.indexFinger.forEach(([x, y, _], i) => {
+                x = x * scaleX;
+                y = y * scaleY;
+                p5.push();
+                p5.text(`i-${i}`, x, y)
+                p5.point(x, y);
+                p5.pop();
+            })
+            handDetection.thumb.forEach(([x, y, _], i) => {
+                x = x * scaleX;
+                y = y * scaleY;
+                p5.push();
+                p5.text(`t-${i}`, x, y)
+                p5.point(x, y);
+                p5.pop();
+            })
+            // userPlatform.translate({ x: position.x - oldPosition.x, y: position.y - oldPosition.y });
+            // oldPosition = { x: position.x, y: position.y };
+
+            // let leftEye = points[37].add(points[40]).div({ x: 2, y: 2 });
+            // let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
+            // let direction = leftEye.sub(rightEye)
+            // userPlatform.setAngle(Math.atan2(direction.y, direction.x))
+        } else if (faceDetection) {
+            const scaleX = window.innerWidth / faceDetectionService.imageSize.width;
+            const scaleY = window.innerHeight / faceDetectionService.imageSize.height;
+
+            for (let i = 0; i <  faceDetection.length; i++) {
+                let [x, y, z] = faceDetection[i];
+                x = x * scaleX;
+                y = y * scaleY;
+
+                p5.push();
+                p5.text(`i-${i}`, x, y)
+                p5.point(x, y);
+                p5.pop();
+                console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+              }
+        }
+    }
+
     function drawBackground() {
         p5.background(0);
         p5.push()
@@ -194,7 +240,7 @@ const Sketch = (p5: P5) => {
     }
 
     function subscribeActions() {
-        Events.on(engine, "beforeTick", (_) => {
+        Events.on(engine, "beforeUpdate", (_) => {
             runDetection();
 
             if (actions.get(PlayerAction.Jump)) {
@@ -231,37 +277,13 @@ const Sketch = (p5: P5) => {
     function runDetection() {
         if (!isDetecting) {
             isDetecting = true;
-            handDetectionService.getHand(videoCapture.elt)
+            faceDetectionService.getFace(videoCapture.elt)
                 .then(res => {
                     if (res) {
-                        handDetection = res;
+                        faceDetection = res;
                     }
                 })
                 .finally(() => isDetecting = false);
-        }
-
-        if (handDetection) {
-            // const points = Array(50).fill({ x: 20, y: 30 })
-            // const position = points[28];
-            handDetection.indexFinger.forEach(([x, y, _], i) => {
-                p5.push();
-                p5.text(`i-${i}`, x, y)
-                p5.point(x, y);
-                p5.pop();
-            })
-            handDetection.thumb.forEach(([x, y, _], i) => {
-                p5.push();
-                p5.text(`t-${i}`, x, y)
-                p5.point(x, y);
-                p5.pop();
-            })
-            // userPlatform.translate({ x: position.x - oldPosition.x, y: position.y - oldPosition.y });
-            // oldPosition = { x: position.x, y: position.y };
-
-            // let leftEye = points[37].add(points[40]).div({ x: 2, y: 2 });
-            // let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
-            // let direction = leftEye.sub(rightEye)
-            // userPlatform.setAngle(Math.atan2(direction.y, direction.x))
         }
     }
 
