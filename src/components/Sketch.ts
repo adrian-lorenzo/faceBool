@@ -1,11 +1,12 @@
-import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import { Engine, Events, World } from "matter-js";
 import P5 from "p5";
+import { horizontalScroll } from "../events/HorizontalScrollEvent";
 import FaceDetectionService from "../services/FaceDetectionService";
-import { relWidth, relHeight } from "../utils/uiUtils";
-import {horizontalScroll} from "../events/HorizontalScrollEvent";
+import HandDetectionService from "../services/hand-detection.service";
+import { relHeight, relWidth } from "../utils/uiUtils";
 import Ball from "./Ball";
 import Platform from "./Platform";
+
 
 enum PlayerAction {
     Jump,
@@ -16,9 +17,10 @@ enum PlayerAction {
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
     const faceDetectionService = new FaceDetectionService();
+    const handDetectionService = new HandDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
-    let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
+    let handDetection: { [key: string]: [number, number, number][] };
     let oldPosition: Matter.Vector = { x: 0, y: 0 };
     let isDetecting = true;
 
@@ -30,7 +32,7 @@ const Sketch = (p5: P5) => {
         {
             x: relWidth(0.05),
             y: relWidth(0.05)
-        }, 
+        },
         relWidth(0.03)
     )
 
@@ -48,12 +50,12 @@ const Sketch = (p5: P5) => {
 
     let platforms = [
         new Platform(
-            { 
-                x: relWidth(0.1), 
+            {
+                x: relWidth(0.1),
                 y: relHeight(0.3)
             },
             {
-                width: relWidth(0.2), 
+                width: relWidth(0.2),
                 height: relHeight(0.05)
             },
             p5.QUARTER_PI
@@ -65,7 +67,7 @@ const Sketch = (p5: P5) => {
                 y: relHeight(0.6)
             },
             {
-                width: relWidth(0.15), 
+                width: relWidth(0.15),
                 height: relHeight(0.05)
             },
             p5.QUARTER_PI / 2
@@ -82,30 +84,30 @@ const Sketch = (p5: P5) => {
             }
         ),
 
-         //floor, walls and ceiling
+        //floor, walls and ceiling
         new Platform(
             {
-                x: relWidth(0.5), 
+                x: relWidth(0.5),
                 y: relHeight(0.999)
-            }, 
+            },
             {
-                width: relWidth(1), 
+                width: relWidth(1),
                 height: relHeight(0.01)
             }
         ),
         new Platform(
             {
-                x: relWidth(0.001), 
+                x: relWidth(0.001),
                 y: relHeight(0.5)
             },
             {
-                width: relWidth(0.01), 
+                width: relWidth(0.01),
                 height: relHeight(1)
             }
         ),
         new Platform(
             {
-                x: relWidth(0.5),  
+                x: relWidth(0.5),
                 y: relHeight(0.001)
             },
             {
@@ -132,7 +134,7 @@ const Sketch = (p5: P5) => {
         subscribeActions();
 
         faceDetectionService.loadModels();
-        
+
         setTimeout(() => {
             Engine.run(engine);
             isDetecting = false;
@@ -229,22 +231,37 @@ const Sketch = (p5: P5) => {
     function runDetection() {
         if (!isDetecting) {
             isDetecting = true;
-            faceDetectionService.getFace(videoCapture.elt, dimensions)
-                .then(res => detection = res)
+            handDetectionService.getHand(videoCapture.elt)
+                .then(res => {
+                    if (res) {
+                        handDetection = res;
+                    }
+                })
                 .finally(() => isDetecting = false);
         }
 
-        if (detection) {
-            const points = detection.landmarks.positions;
-            const position = points[28];
+        if (handDetection) {
+            // const points = Array(50).fill({ x: 20, y: 30 })
+            // const position = points[28];
+            handDetection.indexFinger.forEach(([x, y, _], i) => {
+                p5.push();
+                p5.text(`i-${i}`, x, y)
+                p5.point(x, y);
+                p5.pop();
+            })
+            handDetection.thumb.forEach(([x, y, _], i) => {
+                p5.push();
+                p5.text(`t-${i}`, x, y)
+                p5.point(x, y);
+                p5.pop();
+            })
+            // userPlatform.translate({ x: position.x - oldPosition.x, y: position.y - oldPosition.y });
+            // oldPosition = { x: position.x, y: position.y };
 
-            userPlatform.translate({ x: position.x - oldPosition.x, y: position.y - oldPosition.y });
-            oldPosition = { x: position.x, y: position.y };
-
-            let leftEye = points[37].add(points[40]).div({ x: 2, y: 2 });
-            let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
-            let direction = leftEye.sub(rightEye)
-            userPlatform.setAngle(Math.atan2(direction.y, direction.x))
+            // let leftEye = points[37].add(points[40]).div({ x: 2, y: 2 });
+            // let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
+            // let direction = leftEye.sub(rightEye)
+            // userPlatform.setAngle(Math.atan2(direction.y, direction.x))
         }
     }
 
@@ -252,7 +269,7 @@ const Sketch = (p5: P5) => {
         for (const platform of platforms) {
             platform.draw(p5);
         }
-        
+
         userPlatform.draw(p5);
     }
 }
