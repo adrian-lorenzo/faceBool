@@ -5,16 +5,10 @@ import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import { Sound } from "./Sound";
 import level1 from "../bootstrap/level1";
-
-enum PlayerAction {
-    Jump,
-    MoveLeft,
-    MoveRight
-}
+import { PlayerAction } from "../models/PlayerAction";
 
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
-    
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
@@ -46,14 +40,13 @@ const Sketch = (p5: P5) => {
         setTimeout(() => {
             isDetecting = false;
             p5.tint(255, 255);
+            level1.hasStarted = true;
         }, 4000);
 
         let increaseLoadingBar = setInterval(() => {
             loadStatus += 100;
             if (loadStatus >= 4000) clearInterval(increaseLoadingBar);
         }, 100);
-        
-        faceDetectionService.loadModels();
     }
 
     p5.draw = () => {
@@ -128,7 +121,11 @@ const Sketch = (p5: P5) => {
             let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
             let direction = leftEye.sub(rightEye);
         
-            level1.moveUserPlatform(position, direction);
+            level1.playerState = {
+                position: position, 
+                direction: direction 
+            }
+            level1.actions.set(PlayerAction.MovePlatform, true);
         }
     }
 
