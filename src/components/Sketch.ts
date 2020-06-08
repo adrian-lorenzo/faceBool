@@ -1,9 +1,9 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
-import { Engine, Events, World, Composite } from "matter-js";
+import { Composite, Engine, Events, World } from "matter-js";
 import P5 from "p5";
+import { horizontalScroll } from "../events/HorizontalScrollEvent";
 import FaceDetectionService from "../services/FaceDetectionService";
-import { relWidth, relHeight } from "../utils/uiUtils";
-import {horizontalScroll} from "../events/HorizontalScrollEvent";
+import { relHeight, relWidth } from "../utils/uiUtils";
 import Ball from "./Ball";
 import Platform from "./Platform";
 import { Sound } from "./Sound";
@@ -22,6 +22,10 @@ const Sketch = (p5: P5) => {
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
     let oldPosition: Matter.Vector = { x: 0, y: 0 };
     let isDetecting = true;
+    const platformImage = p5.loadImage('platform_texture.jpg');
+    const ballImage = p5.loadImage('basketball.jpg');
+
+
     let currentFrameRate = 30;
     let loadStatus = 0;
     let leftLimit = 0.2;
@@ -35,8 +39,9 @@ const Sketch = (p5: P5) => {
         {
             x: relWidth(0.05),
             y: relWidth(0.05)
-        }, 
-        relWidth(0.03)
+        },
+        relWidth(0.03),
+        ballImage
     )
 
     //Platforms
@@ -53,15 +58,16 @@ const Sketch = (p5: P5) => {
 
     let platforms = [
         new Platform(
-            { 
-                x: relWidth(0.1), 
+            {
+                x: relWidth(0.1),
                 y: relHeight(0.3)
             },
             {
-                width: relWidth(0.2), 
+                width: relWidth(0.2),
                 height: relHeight(0.05)
             },
-            p5.QUARTER_PI
+            p5.QUARTER_PI,
+            platformImage
         ),
 
         new Platform(
@@ -70,10 +76,11 @@ const Sketch = (p5: P5) => {
                 y: relHeight(0.6)
             },
             {
-                width: relWidth(0.15), 
+                width: relWidth(0.15),
                 height: relHeight(0.05)
             },
-            p5.QUARTER_PI / 2
+            p5.QUARTER_PI / 2,
+            platformImage
         ),
 
         new Platform(
@@ -84,19 +91,35 @@ const Sketch = (p5: P5) => {
             {
                 width: relWidth(0.3),
                 height: relHeight(0.05)
-            }
+            },
+            0,
+            platformImage
         ),
 
-         //floor, walls and ceiling
+        //floor, walls and ceiling
         new Platform(
             {
-                x: relWidth(0.001), 
+                x: relWidth(0.5),
+                y: relHeight(0.999)
+            },
+            {
+                width: relWidth(1),
+                height: relHeight(0.01)
+            },
+            0,
+            platformImage
+        ),
+        new Platform(
+            {
+                x: relWidth(0.001),
                 y: relHeight(0.5)
             },
             {
-                width: relWidth(0.01), 
+                width: relWidth(0.01),
                 height: relHeight(1)
-            }
+            },
+            0,
+            platformImage
         ),
         new Platform(
             {
@@ -106,7 +129,9 @@ const Sketch = (p5: P5) => {
             {
                 width: relWidth(1),
                 height: relHeight(0.01)
-            }
+            },
+            0,
+            platformImage
         ),
         new Platform(
             {
@@ -124,13 +149,13 @@ const Sketch = (p5: P5) => {
     let actions: Map<PlayerAction, Boolean> = new Map();
 
     // Sound
-    let sound:Sound = new Sound();
-    
+    let sound: Sound = new Sound();
+
 
 
     p5.setup = () => {
         // Canvas setup
-        p5.createCanvas(relWidth(1), relHeight(1));
+        p5.createCanvas(relWidth(1), relHeight(1), "webgl");
         videoCapture = p5.createCapture(p5.VIDEO);
         videoCapture.hide();
 
@@ -157,7 +182,8 @@ const Sketch = (p5: P5) => {
 
     p5.draw = () => {
         // Environment
-        Engine.update(engine, 1000/currentFrameRate);
+        p5.translate(-p5.width / 2, -p5.height / 2, 0);
+        Engine.update(engine, 1000 / currentFrameRate);
         drawBackground();
         drawPlatforms();
         drawLimits();
@@ -237,7 +263,7 @@ const Sketch = (p5: P5) => {
         });
 
         Events.on(engine, "collisionStart", (event) => {
-            if (event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id){
+            if (event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) {
                 player.isOnGround = true;
             }
             if ((event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) &&
@@ -269,17 +295,17 @@ const Sketch = (p5: P5) => {
         }
     }
 
-    function drawLoader(){
+    function drawLoader() {
         p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));
         p5.fill(0, 255, 0);
-        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus*0.25/4000), relHeight(0.049))
+        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus * 0.25 / 4000), relHeight(0.049))
         p5.fill(0);
         p5.textSize(relWidth(0.025));
         p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
         p5.fill(255);
     }
 
-    function checkLimits(){
+    function checkLimits() {
         if ((player.getPosition().x) < relWidth(leftLimit) ||
             (player.getPosition().x) > relWidth(rightLimit)) {
             World.remove(engine.world, userPlatform.entity);
@@ -289,9 +315,9 @@ const Sketch = (p5: P5) => {
     }
 
 
-    function drawLimits(){
+    function drawLimits() {
         p5.strokeWeight(3);
-        for (let i = relHeight(0); i < relHeight(1); i += relHeight(0.05)){
+        for (let i = relHeight(0); i < relHeight(1); i += relHeight(0.05)) {
             p5.line(relWidth(leftLimit), i, relWidth(leftLimit), i + relHeight(0.02));
             p5.line(relWidth(rightLimit), i, relWidth(rightLimit), i + relHeight(0.02));
         }
@@ -308,7 +334,7 @@ const Sketch = (p5: P5) => {
         for (const platform of platforms) {
             platform.draw(p5);
         }
-        
+
         userPlatform.draw(p5);
     }
 }
