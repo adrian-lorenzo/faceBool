@@ -8,9 +8,11 @@ export default class Platform implements Entity {
     id: number = getUniqueIdentifier();
     entity: Matter.Body
     dimensions: Size
+    hidden = false
 
     constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0) {
         this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
+            id: this.id,
             isStatic: true,
             angle: angle
         });
@@ -19,6 +21,7 @@ export default class Platform implements Entity {
     }
 
     draw(p5: P5) {
+        if (this.hidden) return;
         p5.push();
         p5.beginShape();
         for (const vertex of this.entity.vertices) {

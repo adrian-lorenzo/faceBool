@@ -5,7 +5,8 @@ export enum PlayerAction {
     MoveLeft,
     MoveRight,
     MovePlatform,
-    TranslateStage
+    TranslateStage,
+    AtLastPlatform
 }
 
 export default interface PlayerState {

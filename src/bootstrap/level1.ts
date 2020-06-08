@@ -2,6 +2,10 @@ import Level from "../models/Level"
 import Stage from "../models/Stage"
 import Platform from "../components/Platform"
 import { relWidth, relHeight } from "../utils/uiUtils"
+import Limit, { Orientation } from "../models/Limit"
+
+const leftLimit = new Limit(0.2, Orientation.LEFT);
+const rightLimit = new Limit(0.8, Orientation.RIGHT);
 
 const level1 = new Level([
     new Stage([
@@ -66,8 +70,10 @@ const level1 = new Level([
                 width: relWidth(0.3),
                 height: relHeight(0.05)
             }
-        )
-    ]),
+        )],
+        leftLimit,
+        rightLimit
+    ),
 
     new Stage([
         new Platform(
@@ -120,8 +126,10 @@ const level1 = new Level([
                 width: relWidth(1),
                 height: relHeight(0.01)
             }
-        )
-    ])
+        )],
+        leftLimit,
+        rightLimit
+    )
 ], 30);
 
 export default level1;
