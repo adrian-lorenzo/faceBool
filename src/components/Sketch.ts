@@ -21,6 +21,8 @@ const Sketch = (p5: P5) => {
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
     let oldPosition: Matter.Vector = { x: 0, y: 0 };
     let isDetecting = true;
+    let currentFrameRate = 30;
+    let loadStatus = 0;
 
     // MARK: - Physics engine constants
     let engine = Engine.create();
@@ -85,16 +87,6 @@ const Sketch = (p5: P5) => {
          //floor, walls and ceiling
         new Platform(
             {
-                x: relWidth(0.5), 
-                y: relHeight(0.999)
-            }, 
-            {
-                width: relWidth(1), 
-                height: relHeight(0.01)
-            }
-        ),
-        new Platform(
-            {
                 x: relWidth(0.001), 
                 y: relHeight(0.5)
             },
@@ -105,7 +97,7 @@ const Sketch = (p5: P5) => {
         ),
         new Platform(
             {
-                x: relWidth(0.5),  
+                x: relWidth(0.5),
                 y: relHeight(0.001)
             },
             {
@@ -126,24 +118,34 @@ const Sketch = (p5: P5) => {
         videoCapture.hide();
 
         // Physics setup
-        World.add(engine.world, player.entity);
         World.add(engine.world, platforms.map((platform) => platform.entity));
         World.add(engine.world, userPlatform.entity);
         subscribeActions();
+        p5.frameRate(currentFrameRate);
+        p5.tint(55, 100);
 
         faceDetectionService.loadModels();
-        
+
         setTimeout(() => {
             Engine.run(engine);
+            World.add(engine.world, player.entity);
             isDetecting = false;
-        }, 4000)
+            p5.tint(255, 255);
+        }, 4000);
+
+        let increaseLoadingBar = setInterval(() => {
+            loadStatus += 100;
+            if (loadStatus >= 4000) clearInterval(increaseLoadingBar);
+        }, 100);
     }
 
     p5.draw = () => {
         // Environment
+        Engine.update(engine, 1000/currentFrameRate);
         drawBackground();
         drawPlatforms();
         player.draw(p5);
+        if (loadStatus < 4000) drawLoader();
     }
 
 
@@ -192,7 +194,7 @@ const Sketch = (p5: P5) => {
     }
 
     function subscribeActions() {
-        Events.on(engine, "beforeTick", (_) => {
+        Events.on(engine, "beforeUpdate", (_) => {
             runDetection();
 
             if (actions.get(PlayerAction.Jump)) {
@@ -246,6 +248,16 @@ const Sketch = (p5: P5) => {
             let direction = leftEye.sub(rightEye)
             userPlatform.setAngle(Math.atan2(direction.y, direction.x))
         }
+    }
+
+    function drawLoader(){
+        p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));
+        p5.fill(0, 255, 0);
+        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus*0.25/4000), relHeight(0.049))
+        p5.fill(0);
+        p5.textSize(relWidth(0.025));
+        p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
+        p5.fill(255);
     }
 
     function drawPlatforms() {
