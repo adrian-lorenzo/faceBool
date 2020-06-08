@@ -29,16 +29,6 @@ const level1 = new Level([
         ),
         new Platform(
             {
-                x: relWidth(0.9),
-                y: relHeight(0.4)
-            },
-            {
-                width: relWidth(0.3),
-                height: relHeight(0.05)
-            }
-        ),
-        new Platform(
-            {
                 x: relWidth(0.5), 
                 y: relHeight(0.999)
             }, 
@@ -65,6 +55,16 @@ const level1 = new Level([
             {
                 width: relWidth(1),
                 height: relHeight(0.01)
+            }
+        ),
+        new Platform(
+            {
+                x: relWidth(0.9),
+                y: relHeight(0.4)
+            },
+            {
+                width: relWidth(0.3),
+                height: relHeight(0.05)
             }
         )
     ]),

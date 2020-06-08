@@ -101,6 +101,7 @@ export default class Level {
 
     onCollisionStart = (event: Matter.IEventCollision<Engine>) => {
         if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
+            this.sound.playPlatformSound();
             this.player.isOnGround = true;
         }
 
@@ -122,7 +123,10 @@ export default class Level {
     }
 
     translateToNewStage = () => {
-        if (this.player.getPosition().x < relWidth(0.05)) {
+        const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
+        const lastStage = this.stages[this.currentStageIdx].platforms[lastIndex];
+
+        if ((lastStage.entity.position.x - (lastStage.dimensions.width / 2)) <= relWidth(0)) {
             this.actions.set(PlayerAction.TranslateStage, false);
             this.goNextStage();
             this.userPlatform.translate({x:0, y:-1000});
@@ -137,14 +141,14 @@ export default class Level {
     }
 
     goNextStage = () => {
-        if (this.currentStageIdx !== this.stages.length - 1) {
+        if (this.currentStageIdx === this.stages.length - 1) return;
             this.currentStageIdx++;
             World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
             this.stages[this.currentStageIdx].platforms
                 .unshift(this.stages[this.currentStageIdx-1].platforms[this.stages[this.currentStageIdx-1].platforms.length - 1]);
-        }
 
-        this.stages[this.currentStageIdx-1].platforms.slice(0, -1).forEach((platform) => {
+        this.stages[this.currentStageIdx-1].platforms.forEach((platform, index) => {
+            if (index === this.stages[this.currentStageIdx-1].platforms.length - 1) return;
             World.remove(this.engine.world, platform.entity);
         });
     } 
