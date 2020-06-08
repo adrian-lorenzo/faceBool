@@ -142,10 +142,10 @@ export default class Level {
 
     goNextStage = () => {
         if (this.currentStageIdx === this.stages.length - 1) return;
-            this.currentStageIdx++;
-            World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
-            this.stages[this.currentStageIdx].platforms
-                .unshift(this.stages[this.currentStageIdx-1].platforms[this.stages[this.currentStageIdx-1].platforms.length - 1]);
+        this.currentStageIdx++;
+        World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
+        this.stages[this.currentStageIdx].platforms
+            .unshift(this.stages[this.currentStageIdx-1].platforms[this.stages[this.currentStageIdx-1].platforms.length - 1]);
 
         this.stages[this.currentStageIdx-1].platforms.forEach((platform, index) => {
             if (index === this.stages[this.currentStageIdx-1].platforms.length - 1) return;
