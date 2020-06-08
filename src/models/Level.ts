@@ -5,10 +5,13 @@ import Ball from "../components/Ball";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import { Engine, Events, World } from "matter-js";
 import PlayerState, { PlayerAction } from "./PlayerAction";
+import { Sound } from "../components/Sound";
 
 export default class Level {
     stages: Stage[];
     frameRate: number;
+
+    sound= new Sound();
 
     engine = Engine.create();
     currentStageIdx = 0;
@@ -73,6 +76,7 @@ export default class Level {
 
     onPhysicsUpdate = () => {
         if (this.actions.get(PlayerAction.Jump)) {
+            this.sound.playJumpSound();
             this.player.jump();
         }
 
@@ -90,6 +94,7 @@ export default class Level {
         }
 
         if (this.actions.get(PlayerAction.TranslateStage)) {
+            this.sound.playMoveSound();
             this.translateToNewStage();
         }
     }

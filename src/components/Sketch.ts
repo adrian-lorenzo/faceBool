@@ -3,7 +3,6 @@ import P5 from "p5";
 import { horizontalScroll } from "../events/HorizontalScrollEvent";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
-import { Sound } from "./Sound";
 import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
 
@@ -22,9 +21,6 @@ const Sketch = (p5: P5) => {
     let loadStatus = 0;
     let leftLimit = 0.2;
     let rightLimit = 0.8;
-
-    // Sound
-    let sound:Sound = new Sound();
 
     p5.setup = () => {
         // Canvas setup
@@ -90,7 +86,6 @@ const Sketch = (p5: P5) => {
         }
 
         if (p5.key === 'W' || p5.key === 'w') {
-            sound.playJumpSound();
             level1.actions.set(PlayerAction.Jump, false);
         }
     }
