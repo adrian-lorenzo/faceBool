@@ -99,8 +99,8 @@ export default class Level {
     }
  
     checkLimits = () => {
-        if ((this.userPlatform.entity.position.x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
-            (this.userPlatform.entity.position.x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
+        if ((this.player.getPosition().x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
+            (this.player.getPosition().x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
             World.remove(this.engine.world, this.userPlatform.entity);
         } else if (Composite.get(this.engine.world, this.userPlatform.entity.id, "body") === null) {
             World.add(this.engine.world, this.userPlatform.entity);
