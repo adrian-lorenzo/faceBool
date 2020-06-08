@@ -47,13 +47,13 @@ export default class Level {
         this.subscribeActions();
     }
 
-    run = (p5: P5) => {
+    run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
         if (!this.hasStarted) return;
         Engine.update(this.engine, 1000/this.frameRate);
 
-        this.player.draw(p5);
-        this.userPlatform.draw(p5);
-        this.stages[this.currentStageIdx].draw(p5);
+        this.player.draw(p5, ballTexture);
+        this.userPlatform.draw(p5, platformTexture);
+        this.stages[this.currentStageIdx].draw(p5, platformTexture);
     }
 
     moveUserPlatform() {

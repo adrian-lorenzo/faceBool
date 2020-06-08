@@ -5,13 +5,12 @@ import Entity from "./Entity";
 
 export default class Ball implements Entity {
     id: number = getUniqueIdentifier();
-    entity: Matter.Body
-    torque: number
-    jumpForce: number
-    isOnGround: boolean = true
-    texture?;
+    entity: Matter.Body;
+    torque: number;
+    jumpForce: number;
+    isOnGround: boolean = true;
 
-    constructor(pos: Matter.Vector, radius: number, texture?) {
+    constructor(pos: Matter.Vector, radius: number) {
         this.entity = Bodies.circle(pos.x, pos.y, radius, {
             id: this.id,
             density: radius * 0.08,
@@ -22,16 +21,15 @@ export default class Ball implements Entity {
         });
         this.torque = radius * 30;
         this.jumpForce = -radius * 8;
-        this.texture = texture;
     }
 
-    draw(p5: P5) {
+    draw(p5: P5, texture?: P5.Image) {
         const radius = this.entity.circleRadius ? this.entity.circleRadius : 0
 
         p5.push();
         p5.fill(p5.color("black"));
         // p5.rotateZ(this.rotation)
-        if (this.texture) p5.texture(this.texture)
+        if (texture) p5.texture(texture)
         p5.circle(
             this.entity.position.x,
             this.entity.position.y,

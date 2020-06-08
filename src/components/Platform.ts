@@ -1,5 +1,5 @@
 import { Bodies, Body } from "matter-js";
-import { default as P5, default as p5 } from "p5";
+import P5 from "p5";
 import { Size } from "../models/Size";
 import { getUniqueIdentifier } from "../utils/uiUtils";
 import Entity from "./Entity";
@@ -8,10 +8,9 @@ export default class Platform implements Entity {
     id: number = getUniqueIdentifier();
     entity: Matter.Body
     dimensions: Size;
-    texture?: p5.Image;
     hidden = false
 
-    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0, texture?: p5.Image) {
+    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0) {
         this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
             id: this.id,
             isStatic: true,
@@ -24,7 +23,6 @@ export default class Platform implements Entity {
             //     }
             // }
         });
-        this.texture = texture;
         this.dimensions = dimensions;
         /**this.texturePoints = [
             [0, 0],
@@ -34,11 +32,11 @@ export default class Platform implements Entity {
         ]*/
     }
 
-    draw(p5: P5) {
+    draw(p5: P5, texture?: P5.Image) {
         if (this.hidden) return;
         p5.push();
         p5.beginShape();
-        if (this.texture) { p5.texture(this.texture); }
+        if (texture) { p5.texture(texture); }
         this.entity.vertices.forEach((vertex, i) => {
             p5.vertex(vertex.x, vertex.y)//, 0, ...this.texturePoints[i]);
         })

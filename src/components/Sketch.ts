@@ -1,6 +1,5 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import P5 from "p5";
-import { horizontalScroll } from "../events/HorizontalScrollEvent";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import level1 from "../bootstrap/level1";
@@ -14,8 +13,8 @@ const Sketch = (p5: P5) => {
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
     let isDetecting = true;
-    const platformImage = p5.loadImage('platform_texture.jpg');
-    const ballImage = p5.loadImage('basketball.jpg');
+    const platformTexture = p5.loadImage('platform_texture.jpg');
+    const ballTexture = p5.loadImage('basketball.jpg');
 
 
     let currentFrameRate = 30;
@@ -23,7 +22,7 @@ const Sketch = (p5: P5) => {
 
     p5.setup = () => {
         // Canvas setup
-        p5.createCanvas(relWidth(1), relHeight(1), "webgl");
+        p5.createCanvas(relWidth(1), relHeight(1), p5.WEBGL);
         videoCapture = p5.createCapture(p5.VIDEO);
         videoCapture.hide();
 
@@ -52,7 +51,7 @@ const Sketch = (p5: P5) => {
         drawBackground();
         if (loadStatus < 4000) drawLoader();
         runDetection();
-        level1.run(p5);
+        level1.run(p5, ballTexture, platformTexture);
     }
 
 
@@ -126,9 +125,9 @@ const Sketch = (p5: P5) => {
     }
 
     function drawLoader() {
-        p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));
+        p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));;
         p5.fill(0, 255, 0);
-        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus * 0.25 / 4000), relHeight(0.049))
+        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus * 0.25 / 4000), relHeight(0.049));
         p5.fill(0);
         p5.textSize(relWidth(0.025));
         p5.text("Cargando...", relWidth(0.12), relHeight(0.94));

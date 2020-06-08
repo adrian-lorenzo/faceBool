@@ -13,9 +13,9 @@ export default class Stage {
         this.rightLimit = rightLimit;
     }
 
-    draw(p5: P5) {
+    draw(p5: P5, texture?: P5.Image) {
         this.platforms.forEach(platform => {
-            platform.draw(p5);
+            platform.draw(p5, texture);
         });
 
         this.leftLimit.draw(p5);
