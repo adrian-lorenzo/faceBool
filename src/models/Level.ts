@@ -3,7 +3,7 @@ import Platform from "../components/Platform";
 import Stage from "./Stage";
 import Ball from "../components/Ball";
 import { relWidth, relHeight } from "../utils/uiUtils";
-import { Engine, Events, World } from "matter-js";
+import { Engine, Events, World, Composite } from "matter-js";
 import PlayerState, { PlayerAction } from "./PlayerAction";
 import { Sound } from "../components/Sound";
 
@@ -51,9 +51,9 @@ export default class Level {
         if (!this.hasStarted) return;
         Engine.update(this.engine, 1000/this.frameRate);
 
-        this.stages[this.currentStageIdx].draw(p5);
         this.player.draw(p5);
         this.userPlatform.draw(p5);
+        this.stages[this.currentStageIdx].draw(p5);
     }
 
     moveUserPlatform() {
@@ -75,6 +75,39 @@ export default class Level {
     }
 
     onPhysicsUpdate = () => {
+        this.checkLimits();
+        this.checkActions();
+    }
+
+    onCollisionStart = (event: Matter.IEventCollision<Engine>) => {
+        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
+            this.sound.playPlatformSound();
+            this.player.isOnGround = true;
+
+            const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
+            const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
+            if (event.pairs[0].bodyA.id === lastPlatform.id || event.pairs[0].bodyB.id === lastPlatform.id) {
+                this.actions.set(PlayerAction.AtLastPlatform, true);
+            }
+        }
+    }
+
+    onCollisionEnd = (event: Matter.IEventCollision<Engine>) => {
+        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
+            this.player.isOnGround = false;
+        }
+    }
+ 
+    checkLimits = () => {
+        if ((this.userPlatform.entity.position.x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
+            (this.userPlatform.entity.position.x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
+            World.remove(this.engine.world, this.userPlatform.entity);
+        } else if (Composite.get(this.engine.world, this.userPlatform.entity.id, "body") === null) {
+            World.add(this.engine.world, this.userPlatform.entity);
+        }
+    }
+
+    checkActions = () => {
         if (this.actions.get(PlayerAction.Jump)) {
             this.sound.playJumpSound();
             this.player.jump();
@@ -93,43 +126,34 @@ export default class Level {
             this.actions.set(PlayerAction.MovePlatform, false);
         }
 
+        if (this.actions.get(PlayerAction.AtLastPlatform)) {
+            const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
+            const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
+            if (this.player.getPosition().x >= lastPlatform.entity.position.x) {
+                this.startTranslationToNewStage();
+                this.actions.set(PlayerAction.AtLastPlatform, false);
+            }
+        }
+
         if (this.actions.get(PlayerAction.TranslateStage)) {
             this.sound.playMoveSound();
             this.translateToNewStage();
         }
     }
 
-    onCollisionStart = (event: Matter.IEventCollision<Engine>) => {
-        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
-            this.sound.playPlatformSound();
-            this.player.isOnGround = true;
-        }
-
-        if ((event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) &&
-            this.player.getPosition().x > relWidth(0.9)) {
-                this.startTranslationToNewStage();
-        }
-    }
-
-    onCollisionEnd = (event: Matter.IEventCollision<Engine>) => {
-        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
-            this.player.isOnGround = false;
-        }
-    }
- 
     startTranslationToNewStage = () => {
-        this.userPlatform.translate({ x:0, y:1000 });
         this.actions.set(PlayerAction.TranslateStage, true);
+        this.userPlatform.hidden = true;
     }
 
     translateToNewStage = () => {
         const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
-        const lastStage = this.stages[this.currentStageIdx].platforms[lastIndex];
+        const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
 
-        if ((lastStage.entity.position.x - (lastStage.dimensions.width / 2)) <= relWidth(0)) {
+        if ((lastPlatform.entity.position.x - (lastPlatform.dimensions.width / 2)) <= relWidth(0)) {
             this.actions.set(PlayerAction.TranslateStage, false);
             this.goNextStage();
-            this.userPlatform.translate({x:0, y:-1000});
+            this.userPlatform.hidden = false;
             return;
         }
 

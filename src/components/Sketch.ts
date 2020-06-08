@@ -19,8 +19,6 @@ const Sketch = (p5: P5) => {
 
     let currentFrameRate = 30;
     let loadStatus = 0;
-    let leftLimit = 0.2;
-    let rightLimit = 0.8;
 
     p5.setup = () => {
         // Canvas setup
