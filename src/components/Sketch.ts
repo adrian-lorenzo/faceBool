@@ -1,5 +1,5 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
-import { Engine, Events, World } from "matter-js";
+import { Engine, Events, World, Composite } from "matter-js";
 import P5 from "p5";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
@@ -24,6 +24,8 @@ const Sketch = (p5: P5) => {
     let isDetecting = true;
     let currentFrameRate = 30;
     let loadStatus = 0;
+    let leftLimit = 0.2;
+    let rightLimit = 0.8;
 
     // MARK: - Physics engine constants
     let engine = Engine.create();
@@ -134,7 +136,6 @@ const Sketch = (p5: P5) => {
 
         // Physics setup
         World.add(engine.world, platforms.map((platform) => platform.entity));
-        World.add(engine.world, userPlatform.entity);
         subscribeActions();
         p5.frameRate(currentFrameRate);
         p5.tint(55, 100);
@@ -159,6 +160,8 @@ const Sketch = (p5: P5) => {
         Engine.update(engine, 1000/currentFrameRate);
         drawBackground();
         drawPlatforms();
+        drawLimits();
+        checkLimits();
         player.draw(p5);
         if (loadStatus < 4000) drawLoader();
     }
@@ -234,7 +237,7 @@ const Sketch = (p5: P5) => {
         });
 
         Events.on(engine, "collisionStart", (event) => {
-            if (event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) {
+            if (event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id){
                 player.isOnGround = true;
             }
             if ((event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) &&
@@ -274,6 +277,31 @@ const Sketch = (p5: P5) => {
         p5.textSize(relWidth(0.025));
         p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
         p5.fill(255);
+    }
+
+    function checkLimits(){
+        if ((player.getPosition().x) < relWidth(leftLimit) ||
+            (player.getPosition().x) > relWidth(rightLimit)) {
+            World.remove(engine.world, userPlatform.entity);
+        } else if (Composite.get(engine.world, userPlatform.entity.id, "body") === null) {
+            World.add(engine.world, userPlatform.entity);
+        }
+    }
+
+
+    function drawLimits(){
+        p5.strokeWeight(3);
+        for (let i = relHeight(0); i < relHeight(1); i += relHeight(0.05)){
+            p5.line(relWidth(leftLimit), i, relWidth(leftLimit), i + relHeight(0.02));
+            p5.line(relWidth(rightLimit), i, relWidth(rightLimit), i + relHeight(0.02));
+        }
+        p5.push();
+        p5.translate(0, 0);
+        p5.fill(255, 0, 0, 100);
+        p5.noStroke();
+        p5.rect(0, 0, relWidth(leftLimit), relHeight(1));
+        p5.rect(relWidth(rightLimit), 0, relWidth(1), relHeight(1));
+        p5.pop();
     }
 
     function drawPlatforms() {
