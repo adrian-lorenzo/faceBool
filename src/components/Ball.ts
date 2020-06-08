@@ -1,7 +1,7 @@
-import Entity from "./Entity";
 import { Bodies, Body } from "matter-js";
 import P5 from "p5";
 import { getUniqueIdentifier } from "../utils/uiUtils";
+import Entity from "./Entity";
 
 export default class Ball implements Entity {
     id: number = getUniqueIdentifier();
@@ -9,8 +9,9 @@ export default class Ball implements Entity {
     torque: number
     jumpForce: number
     isOnGround: boolean = true
+    texture?;
 
-    constructor(pos: Matter.Vector, radius: number) {
+    constructor(pos: Matter.Vector, radius: number, texture?) {
         this.entity = Bodies.circle(pos.x, pos.y, radius, {
             id: this.id,
             density: radius * 0.08,
@@ -19,24 +20,27 @@ export default class Ball implements Entity {
             frictionAir: 0.02,
             restitution: 0.8
         });
-        this.torque = radius * 30
-        this.jumpForce = -radius * 8
+        this.torque = radius * 30;
+        this.jumpForce = -radius * 8;
+        this.texture = texture;
     }
 
     draw(p5: P5) {
         const radius = this.entity.circleRadius ? this.entity.circleRadius : 0
-        
+
         p5.push();
-        p5.fill(p5.color("red"));
+        p5.fill(p5.color("black"));
+        // p5.rotateZ(this.rotation)
+        if (this.texture) p5.texture(this.texture)
         p5.circle(
-            this.entity.position.x, 
+            this.entity.position.x,
             this.entity.position.y,
             radius * 2
         );
         p5.pop();
     }
 
-    moveRight() {
+    moveRight() {
         this.entity.torque = this.torque
     }
 
@@ -48,12 +52,12 @@ export default class Ball implements Entity {
         Body.translate(this.entity, position);
     }
 
-    getPosition(){
+    getPosition() {
         return this.entity.position;
     }
 
-    jump() {
-        if (this.isOnGround) {
+    jump() {
+        if (this.isOnGround) {
             this.entity.force = {
                 x: 0,
                 y: this.jumpForce

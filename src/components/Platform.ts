@@ -1,29 +1,45 @@
-import Entity from "./Entity";
 import { Bodies, Body } from "matter-js";
-import P5 from "p5";
-import { getUniqueIdentifier } from "../utils/uiUtils";
+import { default as P5, default as p5 } from "p5";
 import { Size } from "../models/Size";
+import { getUniqueIdentifier } from "../utils/uiUtils";
+import Entity from "./Entity";
 
 export default class Platform implements Entity {
     id: number = getUniqueIdentifier();
     entity: Matter.Body
-    dimensions: Size
+    dimensions: Size;
+    texture?: p5.Image;
+    texturePoints: [number, number][];
 
-    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0) {
+    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0, texture?: p5.Image) {
         this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
             isStatic: true,
-            angle: angle
+            angle: angle,
+            // render: {
+            //     sprite: {
+            //         texture: 'platform_texture.png',
+            //         xScale: 2,
+            //         yScale: 2
+            //     }
+            // }
         });
-
+        this.texture = texture;
         this.dimensions = dimensions;
+        this.texturePoints = [
+            [0, 0],
+            [dimensions.width, 0],
+            [dimensions.width, dimensions.height],
+            [0, dimensions.height]
+        ]
     }
 
     draw(p5: P5) {
         p5.push();
         p5.beginShape();
-        for (const vertex of this.entity.vertices) {
-            p5.vertex(vertex.x, vertex.y);
-        }
+        if (this.texture) { p5.texture(this.texture); }
+        this.entity.vertices.forEach((vertex, i) => {
+            p5.vertex(vertex.x, vertex.y, 0, ...this.texturePoints[i]);
+        })
         p5.endShape();
         p5.pop();
     }
