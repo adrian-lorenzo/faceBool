@@ -145,7 +145,7 @@ const Sketch = (p5: P5) => {
         drawBackground();
         drawPlatforms();
         player.draw(p5);
-        if (loadStatus <= 4000) drawLoader();
+        if (loadStatus < 4000) drawLoader();
     }
 
 
