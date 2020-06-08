@@ -65,6 +65,8 @@ export class Sound {
         sound.play();
     }
 
-
+    changeGlobalVolume(vol:number){
+        Howler.volume(vol);
+    }
 
 }
