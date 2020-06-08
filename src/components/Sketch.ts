@@ -7,6 +7,7 @@ import { PlayerAction } from "../models/PlayerAction";
 
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
+    
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
@@ -36,6 +37,8 @@ const Sketch = (p5: P5) => {
             loadStatus += 100;
             if (loadStatus >= 4000) clearInterval(increaseLoadingBar);
         }, 100);
+        
+        faceDetectionService.loadModels();
     }
 
     p5.draw = () => {
