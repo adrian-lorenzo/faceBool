@@ -1,11 +1,12 @@
 import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
-import { Engine, Events, World } from "matter-js";
+import { Composite, Engine, Events, World } from "matter-js";
 import P5 from "p5";
 import { horizontalScroll } from "../events/HorizontalScrollEvent";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relHeight, relWidth } from "../utils/uiUtils";
 import Ball from "./Ball";
 import Platform from "./Platform";
+import { Sound } from "./Sound";
 
 enum PlayerAction {
     Jump,
@@ -25,6 +26,10 @@ const Sketch = (p5: P5) => {
     const ballImage = p5.loadImage('basketball.jpg');
 
 
+    let currentFrameRate = 30;
+    let loadStatus = 0;
+    let leftLimit = 0.2;
+    let rightLimit = 0.8;
 
     // MARK: - Physics engine constants
     let engine = Engine.create();
@@ -127,11 +132,25 @@ const Sketch = (p5: P5) => {
             },
             0,
             platformImage
+        ),
+        new Platform(
+            {
+                x: relWidth(0.9),
+                y: relHeight(0.9)
+            },
+            {
+                width: relWidth(1),
+                height: relHeight(0.1)
+            }
         )
     ];
 
     // App state
     let actions: Map<PlayerAction, Boolean> = new Map();
+
+    // Sound
+    let sound: Sound = new Sound();
+
 
 
     p5.setup = () => {
@@ -141,26 +160,36 @@ const Sketch = (p5: P5) => {
         videoCapture.hide();
 
         // Physics setup
-        World.add(engine.world, player.entity);
         World.add(engine.world, platforms.map((platform) => platform.entity));
-        World.add(engine.world, userPlatform.entity);
         subscribeActions();
+        p5.frameRate(currentFrameRate);
+        p5.tint(55, 100);
 
         faceDetectionService.loadModels();
 
         setTimeout(() => {
             Engine.run(engine);
-
+            World.add(engine.world, player.entity);
             isDetecting = false;
-        }, 4000)
+            p5.tint(255, 255);
+        }, 4000);
+
+        let increaseLoadingBar = setInterval(() => {
+            loadStatus += 100;
+            if (loadStatus >= 4000) clearInterval(increaseLoadingBar);
+        }, 100);
     }
 
     p5.draw = () => {
         // Environment
         p5.translate(-p5.width / 2, -p5.height / 2, 0);
+        Engine.update(engine, 1000 / currentFrameRate);
         drawBackground();
         drawPlatforms();
+        drawLimits();
+        checkLimits();
         player.draw(p5);
+        if (loadStatus < 4000) drawLoader();
     }
 
 
@@ -196,6 +225,7 @@ const Sketch = (p5: P5) => {
 
         if (p5.key === 'W' || p5.key === 'w') {
             actions.set(PlayerAction.Jump, false);
+            sound.playJumpSound();
         }
     }
 
@@ -209,7 +239,7 @@ const Sketch = (p5: P5) => {
     }
 
     function subscribeActions() {
-        Events.on(engine, "beforeTick", (_) => {
+        Events.on(engine, "beforeUpdate", (_) => {
             runDetection();
 
             if (actions.get(PlayerAction.Jump)) {
@@ -238,7 +268,7 @@ const Sketch = (p5: P5) => {
             }
             if ((event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) &&
                 player.getPosition().x > relWidth(0.9)) {
-                horizontalScroll(userPlatform, platforms, player);
+                horizontalScroll(userPlatform, platforms, player, sound);
             }
         });
     }
@@ -263,6 +293,41 @@ const Sketch = (p5: P5) => {
             let direction = leftEye.sub(rightEye)
             userPlatform.setAngle(Math.atan2(direction.y, direction.x))
         }
+    }
+
+    function drawLoader() {
+        p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));
+        p5.fill(0, 255, 0);
+        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus * 0.25 / 4000), relHeight(0.049))
+        p5.fill(0);
+        p5.textSize(relWidth(0.025));
+        p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
+        p5.fill(255);
+    }
+
+    function checkLimits() {
+        if ((player.getPosition().x) < relWidth(leftLimit) ||
+            (player.getPosition().x) > relWidth(rightLimit)) {
+            World.remove(engine.world, userPlatform.entity);
+        } else if (Composite.get(engine.world, userPlatform.entity.id, "body") === null) {
+            World.add(engine.world, userPlatform.entity);
+        }
+    }
+
+
+    function drawLimits() {
+        p5.strokeWeight(3);
+        for (let i = relHeight(0); i < relHeight(1); i += relHeight(0.05)) {
+            p5.line(relWidth(leftLimit), i, relWidth(leftLimit), i + relHeight(0.02));
+            p5.line(relWidth(rightLimit), i, relWidth(rightLimit), i + relHeight(0.02));
+        }
+        p5.push();
+        p5.translate(0, 0);
+        p5.fill(255, 0, 0, 100);
+        p5.noStroke();
+        p5.rect(0, 0, relWidth(leftLimit), relHeight(1));
+        p5.rect(relWidth(rightLimit), 0, relWidth(1), relHeight(1));
+        p5.pop();
     }
 
     function drawPlatforms() {
