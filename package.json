@@ -28,7 +28,8 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "typescript": "^3.9.2",
-    "util.promisify": "^1.0.1"
+    "util.promisify": "^1.0.1",
+    "howler": "^2.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

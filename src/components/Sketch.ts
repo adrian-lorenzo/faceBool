@@ -6,6 +6,7 @@ import { relWidth, relHeight } from "../utils/uiUtils";
 import {horizontalScroll} from "../events/HorizontalScrollEvent";
 import Ball from "./Ball";
 import Platform from "./Platform";
+import { Sound } from "./Sound";
 
 enum PlayerAction {
     Jump,
@@ -104,11 +105,25 @@ const Sketch = (p5: P5) => {
                 width: relWidth(1),
                 height: relHeight(0.01)
             }
+        ),
+        new Platform(
+            {
+                x: relWidth(0.9),
+                y: relHeight(0.9)
+            },
+            {
+                width: relWidth(1),
+                height: relHeight(0.1)
+            }
         )
     ];
 
     // App state
     let actions: Map<PlayerAction, Boolean> = new Map();
+
+    // Sound
+    let sound:Sound = new Sound();
+    
 
 
     p5.setup = () => {
@@ -181,6 +196,7 @@ const Sketch = (p5: P5) => {
 
         if (p5.key === 'W' || p5.key === 'w') {
             actions.set(PlayerAction.Jump, false);
+            sound.playJumpSound();
         }
     }
 
@@ -223,7 +239,7 @@ const Sketch = (p5: P5) => {
             }
             if ((event.pairs[0].bodyA.id === player.id || event.pairs[0].bodyB.id === player.id) &&
                 player.getPosition().x > relWidth(0.9)) {
-                horizontalScroll(userPlatform, platforms, player);
+                horizontalScroll(userPlatform, platforms, player, sound);
             }
         });
     }
