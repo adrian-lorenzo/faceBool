@@ -4,5 +4,5 @@ export default interface Entity {
     id: number
     entity: Matter.Body
 
-    draw: (p5: P5) => void
+    draw: (p5: P5, texture?: P5.Image) => void
 }
