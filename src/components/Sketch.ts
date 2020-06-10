@@ -4,6 +4,8 @@ import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
+import { Sound } from "./Sound";
+
 
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
@@ -19,6 +21,9 @@ const Sketch = (p5: P5) => {
 
     let currentFrameRate = 30;
     let loadStatus = 0;
+    let nav = <any>navigator;
+    nav.getUserMedia  = nav.getUserMedia || nav.webkitGetUserMedia
+         || nav.mozGetUserMedia || nav.msGetUserMedia;
 
     p5.setup = () => {
         // Canvas setup
@@ -50,8 +55,52 @@ const Sketch = (p5: P5) => {
         p5.translate(-p5.width / 2, -p5.height / 2, 0);
         drawBackground();
         if (loadStatus < 4000) drawLoader();
+        //getVolumenMicro();
         runDetection();
         level1.run(p5, ballTexture, platformTexture);
+    }
+
+    function getVolumenMicro() {
+        if (nav.getUserMedia) {
+            nav.getUserMedia({
+                audio: true
+                },
+                function(stream) {
+                    let audioContext = new AudioContext();
+                    let analyser = audioContext.createAnalyser();
+                    let microphone = audioContext.createMediaStreamSource(stream);
+                    let javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                    analyser.smoothingTimeConstant = 0.8;
+                    analyser.fftSize = 1024;
+
+                    microphone.connect(analyser);
+                    analyser.connect(javascriptNode);
+                    javascriptNode.connect(audioContext.destination);
+
+
+                    javascriptNode.onaudioprocess = function() {
+                        var array = new Uint8Array(analyser.frequencyBinCount);
+                        analyser.getByteFrequencyData(array);
+                        var values = 0;
+
+                        var length = array.length;
+                        for (var i = 0; i < length; i++) {
+                            values += (array[i]);
+                        }
+
+                        var average = values / length;
+
+                        console.log(Math.round(average - 40));
+
+                    } // end fn stream
+                },
+                function(err) {
+                    console.log("The following error occured: " + err.name)
+                });
+        } else {
+            console.log("getUserMedia not supported");
+        }
     }
 
 
@@ -133,6 +182,7 @@ const Sketch = (p5: P5) => {
         p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
         p5.fill(255);
     }
+
 }
 
 export default Sketch;

@@ -7,6 +7,7 @@ export class Sound {
     winSoundFile: string;
     hitWallSoundFile: string
     passPhaseSoundFile: string;
+    nav: any = <any>navigator;
 
     constructor() {
         this.jumpSoundFile      = 'sound/jump.mp3';
@@ -67,6 +68,51 @@ export class Sound {
 
     changeGlobalVolume(vol:number){
         Howler.volume(vol);
+    }
+
+    getVolumenMicro(): number {
+        let volume: number = 0;
+        if (this.nav.getUserMedia) {
+            this.nav.getUserMedia({
+                audio: true
+                },
+                function(stream) {
+                    let audioContext = new AudioContext();
+                    let analyser = audioContext.createAnalyser();
+                    let microphone = audioContext.createMediaStreamSource(stream);
+                    let javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                    analyser.smoothingTimeConstant = 0.8;
+                    analyser.fftSize = 1024;
+
+                    microphone.connect(analyser);
+                    analyser.connect(javascriptNode);
+                    javascriptNode.connect(audioContext.destination);
+
+
+                    javascriptNode.onaudioprocess = function() {
+                        var array = new Uint8Array(analyser.frequencyBinCount);
+                        analyser.getByteFrequencyData(array);
+                        var values = 0;
+
+                        var length = array.length;
+                        for (var i = 0; i < length; i++) {
+                            values += (array[i]);
+                        }
+
+                        var average = values / length;
+
+                        return Math.round(average - 40)
+
+                    } // end fn stream
+                },
+                function(err) {
+                    console.log("The following error occured: " + err.name);
+                });
+        } else {
+            console.log("getUserMedia not supported");
+        }
+        return volume;
     }
 
 }
