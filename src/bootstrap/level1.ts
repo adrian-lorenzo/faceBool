@@ -1,6 +1,6 @@
 import Level from "../models/Level"
 import Stage from "../models/Stage"
-import Platform from "../components/Platform"
+import Platform from "../models/Platform"
 import { relWidth, relHeight } from "../utils/uiUtils"
 import Limit, { Orientation } from "../models/Limit"
 
