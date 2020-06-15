@@ -20,6 +20,8 @@ export default class Platform implements Entity {
         this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
             id: this.id,
             isStatic: true,
+            inertia: Infinity,
+            mass: Infinity,
             angle: angle,
             // render: {
             //     sprite: {
@@ -44,8 +46,16 @@ export default class Platform implements Entity {
         p5.pop();
     }
 
-    translate(position: Matter.Vector) {
-        Body.translate(this.entity, position);
+    translate(delta: Matter.Vector) {
+        Body.translate(this.entity, delta);
+    }
+
+    setPosition(position: Matter.Vector) {
+        Body.setPosition(this.entity, position);
+    }
+
+    setVelocity(delta: Matter.Vector) {
+        Body.setVelocity(this.entity, delta);
     }
 
     setAngle(radians: number) {

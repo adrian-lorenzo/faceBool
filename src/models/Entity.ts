@@ -1,8 +1,7 @@
 import P5 from "p5";
+import Drawable from "./Drawable";
 
-export default interface Entity {
+export default interface Entity extends Drawable {
     id: number
     entity: Matter.Body
-
-    draw: (p5: P5, texture?: P5.Image) => void
 }

@@ -1,45 +1,28 @@
-// eslint-disable-next-line
-import * as tf from "@tensorflow/tfjs-node"; // PLEASE DO NOT DELETE. Needed to improve performance.
-
-import { detectSingleFace, env, IDimensions, nets, Point, resizeResults, TNetInput } from "face-api.js";
-
+import * as tf from "@tensorflow/tfjs";
+import * as blazeface from "@tensorflow-models/blazeface";
 
 export default class FaceDetectionService {
-    modelsLoaded: boolean = false
+    model?: blazeface.BlazeFaceModel
 
-    constructor() {
-        env.monkeyPatch({
-            Canvas: HTMLCanvasElement,
-            Image: HTMLImageElement,
-            ImageData: ImageData,
-            Video: HTMLVideoElement,
-            createCanvasElement: () => document.createElement('canvas'),
-            createImageElement: () => document.createElement('img')
+    async loadModel() {
+        tf.setBackend("webgl");
+        this.model = await blazeface.load({
+            maxFaces: 1
         })
     }
 
-    async loadModels() {
-        await nets.ssdMobilenetv1.loadFromUri('/models');
-        await nets.faceLandmark68Net.loadFromUri('/models');
-    }
 
-    async getFace(input: TNetInput, dimensions: IDimensions) {
-        let detection = await detectSingleFace(input).withFaceLandmarks().run();
-        if (detection) {
-            const origin = new Point(dimensions.width / 2, dimensions.height / 2);
-            detection = resizeResults(detection, { width: dimensions.width, height: dimensions.height });
-            for (let index = 0; index < detection.landmarks.positions.length; index++) {
-                detection.landmarks.positions[index] = flipPoint(detection.landmarks.positions[index], origin);
+    async getFace(image: HTMLVideoElement): Promise<number[][] | undefined> {
+        if (image.readyState === HTMLMediaElement.HAVE_ENOUGH_DATA) {
+            const face = await this.model?.estimateFaces(image, false, true);
+            if (face && face.length > 0) {
+                const value = face[0].landmarks;
+                if (!value || value instanceof tf.Tensor) { return }
+                return value as number[][]
             }
-            return detection
+
         }
 
-        return
+        return 
     }
-}
-
-function flipPoint(vector: Point, origin: Point): Point {
-    vector = vector.sub(origin);
-    vector = vector.mul({ x: -1, y: 1 });
-    return vector.add(origin);
 }

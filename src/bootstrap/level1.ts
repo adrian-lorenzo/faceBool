@@ -12,25 +12,14 @@ const level1 = new Level([
     new Stage([
         new Platform(
             { 
-                x: relWidth(0.1), 
+                x: relWidth(0.075), 
                 y: relHeight(0.3)
             },
             {
-                width: relWidth(0.2), 
+                width: relWidth(0.25), 
                 height: relHeight(0.05)
             },
-            0.78
-        ),
-        new Platform(
-            {
-                x: relWidth(0.25),
-                y: relHeight(0.6)
-            },
-            {
-                width: relWidth(0.15), 
-                height: relHeight(0.05)
-            },
-            0.39
+            0.75
         ),
         new Platform(
             {
@@ -70,7 +59,8 @@ const level1 = new Level([
             {
                 width: relWidth(0.3),
                 height: relHeight(0.05)
-            }
+            },
+            0.30
         )
     ], leftLimit, rightLimit),
     // State2
@@ -87,8 +77,20 @@ const level1 = new Level([
         ),
         new Platform(
             {
-                x: relWidth(0.5),
-                y: relHeight(0.5)
+                x: relWidth(0.725),
+                y: relHeight(0.6)
+            },
+            {
+                width: relWidth(0.5),
+                height: relHeight(0.05)
+            },
+            1.57
+        ),
+
+        new Platform(
+            {
+                x: relWidth(0.725),
+                y: relHeight(0.05)
             },
             {
                 width: relWidth(0.3),
@@ -96,15 +98,17 @@ const level1 = new Level([
             },
             1.57
         ),
+        
         new Platform(
             {
                 x: relWidth(0.9), 
-                y: relHeight(0.9)
+                y: relHeight(0.8)
             }, 
             {
-                width: relWidth(0.3), 
+                width: relWidth(0.4), 
                 height: relHeight(0.05)
-            }
+            },
+            0.20
         )
     ], leftLimit, rightLimit),
     // State3
@@ -143,6 +147,6 @@ const level1 = new Level([
         )
     ], leftLimit, rightLimit)
     
-], 30);
+], 60);
 
 export default level1;

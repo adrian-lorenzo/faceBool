@@ -98,8 +98,7 @@ export class Sound {
                     }
 
                     var volume = values / length;
-
-                    console.log(Math.round(volume));
+                    
                     if (sound.audioVolumeThreshold <= volume) {
                         onAudioPeak()
                     }

@@ -1,9 +1,9 @@
-import { FaceDetection, FaceLandmarks68, WithFaceLandmarks } from "face-api.js";
 import P5 from "p5";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
+import { Loader } from "./Loader";
 
 
 const Sketch = (p5: P5) => {
@@ -12,14 +12,14 @@ const Sketch = (p5: P5) => {
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
-    let detection: WithFaceLandmarks<{ detection: FaceDetection; }, FaceLandmarks68> | undefined;
     let isDetecting = true;
+    let hasEverythingLoaded = false;
     const platformTexture = p5.loadImage('platform_texture.jpg');
     const ballTexture = p5.loadImage('basketball.jpg');
+    const font = p5.loadFont('Roboto-Regular.ttf')
+    const loader = new Loader({ x: relWidth(0), y: relHeight(0.9) }, font);
 
-
-    let currentFrameRate = 30;
-    let loadStatus = 0;
+    let currentFrameRate = 60;
 
     p5.setup = () => {
         // Canvas setup
@@ -30,27 +30,20 @@ const Sketch = (p5: P5) => {
         p5.frameRate(currentFrameRate);
         p5.tint(55, 100);
 
-        faceDetectionService.loadModels();
-
+        faceDetectionService.loadModel()
         setTimeout(() => {
-            isDetecting = false;
-            p5.tint(255, 255);
-            level1.hasStarted = true;
-        }, 4000);
-
-        let increaseLoadingBar = setInterval(() => {
-            loadStatus += 100;
-            if (loadStatus >= 4000) clearInterval(increaseLoadingBar);
-        }, 100);
-        
-        faceDetectionService.loadModels();
+                isDetecting = false;
+                level1.hasStarted = true;
+                hasEverythingLoaded = true;
+                p5.tint(255, 255);
+            }, 4000);
     }
 
     p5.draw = () => {
         // Environment
         p5.translate(-p5.width / 2, -p5.height / 2, 0);
         drawBackground();
-        if (loadStatus < 4000) drawLoader();
+        if (!hasEverythingLoaded) loader.draw(p5);
         runDetection();
         level1.run(p5, ballTexture, platformTexture);
     }
@@ -102,36 +95,26 @@ const Sketch = (p5: P5) => {
     function runDetection() {
         if (!isDetecting) {
             isDetecting = true;
-            faceDetectionService.getFace(videoCapture.elt, dimensions)
-                .then(res => detection = res)
-                .finally(() => isDetecting = false);
-        }
+            faceDetectionService.getFace(videoCapture.elt)
+                .then(detection => {
+                    if (detection) {
+                        const scaleX = dimensions.width / 600.;
+                        const scaleY = dimensions.height / 480.;
+                        let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY};
+                        let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY};
+                        let position = { x: (leftEye.x + rightEye.x) / 2., y: (leftEye.y + rightEye.y) / 2. }
+                        let direction = { x: leftEye.x - rightEye.x, y: leftEye.y - rightEye.y };
 
-        if (detection) {
-            const points = detection.landmarks.positions;
-            const position = points[28];
-
-
-            let leftEye = points[37].add(points[40]).div({ x: 2, y: 2 });
-            let rightEye = points[46].add(points[43]).div({ x: 2, y: 2 });
-            let direction = leftEye.sub(rightEye);
+                        level1.playerState = {
+                            position: position, 
+                            direction: direction 
+                        }
+                        level1.actions.set(PlayerAction.MovePlatform, true);
+                    }
+                })
+                .finally(() => isDetecting = false)
         
-            level1.playerState = {
-                position: position, 
-                direction: direction 
-            }
-            level1.actions.set(PlayerAction.MovePlatform, true);
         }
-    }
-
-    function drawLoader() {
-        p5.rect(relWidth(0.05), relHeight(0.9), relWidth(0.25), relHeight(0.05));;
-        p5.fill(0, 255, 0);
-        p5.rect(relWidth(0.051), relHeight(0.901), relWidth(loadStatus * 0.25 / 4000), relHeight(0.049));
-        p5.fill(0);
-        p5.textSize(relWidth(0.025));
-        p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
-        p5.fill(255);
     }
 
 }

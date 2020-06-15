@@ -13,6 +13,7 @@ export default class Ball implements Entity {
     constructor(pos: Matter.Vector, radius: number) {
         this.entity = Bodies.circle(pos.x, pos.y, radius, {
             id: this.id,
+            mass: 100,
             density: radius * 0.08,
             friction: 0.1,
             frictionStatic: 0,
