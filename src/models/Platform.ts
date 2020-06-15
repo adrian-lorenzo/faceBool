@@ -37,7 +37,6 @@ export default class Platform implements Entity {
         p5.push();
         if (texture) { p5.texture(texture); }
         p5.beginShape();
-        console.log(this.entity.vertices)
         this.entity.vertices.forEach((vertex, i) => {
             p5.vertex(vertex.x, vertex.y, 0, ...this.texturePoints[i]);
         })
