@@ -11,7 +11,7 @@ export default class Level {
     stages: Stage[];
     frameRate: number;
 
-    sound= new Sound();
+    sound = new Sound();
 
     engine = Engine.create();
     currentStageIdx = 0;
@@ -45,6 +45,7 @@ export default class Level {
         World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
         World.add(this.engine.world, this.userPlatform.entity);
         this.subscribeActions();
+        this.sound.setupMicrophoneListener(this.onAudioPeak);
     }
 
     run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
@@ -97,6 +98,10 @@ export default class Level {
             this.player.isOnGround = false;
         }
     }
+
+    onAudioPeak = () => {
+        this.actions.set(PlayerAction.Jump, true);
+    }
  
     checkLimits = () => {
         if ((this.player.getPosition().x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
@@ -111,6 +116,7 @@ export default class Level {
         if (this.actions.get(PlayerAction.Jump)) {
             this.sound.playJumpSound();
             this.player.jump();
+            this.actions.set(PlayerAction.Jump, false);
         }
 
         if (this.actions.get(PlayerAction.MoveLeft)) {

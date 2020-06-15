@@ -7,7 +7,8 @@ export class Sound {
     winSoundFile: string;
     hitWallSoundFile: string
     passPhaseSoundFile: string;
-    nav: any = <any>navigator;
+
+    audioVolumeThreshold = 90;
 
     constructor() {
         this.jumpSoundFile      = 'sound/jump.mp3';
@@ -70,49 +71,40 @@ export class Sound {
         Howler.volume(vol);
     }
 
-    getVolumenMicro(): number {
-        let volume: number = 0;
-        if (this.nav.getUserMedia) {
-            this.nav.getUserMedia({
-                audio: true
-                },
-                function(stream) {
-                    let audioContext = new AudioContext();
-                    let analyser = audioContext.createAnalyser();
-                    let microphone = audioContext.createMediaStreamSource(stream);
-                    let javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+    setupMicrophoneListener(onAudioPeak: () => void) {
+        let sound = this
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then( (stream) => {
+                let audioContext = new window.AudioContext();
+                let analyser = audioContext.createAnalyser();
+                let microphone = audioContext.createMediaStreamSource(stream);
+                let processor = audioContext.createScriptProcessor(2048, 1, 1);
 
-                    analyser.smoothingTimeConstant = 0.8;
-                    analyser.fftSize = 1024;
+                analyser.smoothingTimeConstant = 0.8;
+                analyser.fftSize = 1024;
+                
+                microphone.connect(analyser);
+                processor.connect(audioContext.destination);
+                analyser.connect(processor);
 
-                    microphone.connect(analyser);
-                    analyser.connect(javascriptNode);
-                    javascriptNode.connect(audioContext.destination);
+                processor.onaudioprocess = function() {
+                    var array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    var values = 0;
 
+                    var length = array.length;
+                    for (var i = 0; i < length; i++) {
+                        values += (array[i]);
+                    }
 
-                    javascriptNode.onaudioprocess = function() {
-                        var array = new Uint8Array(analyser.frequencyBinCount);
-                        analyser.getByteFrequencyData(array);
-                        var values = 0;
+                    var volume = values / length;
 
-                        var length = array.length;
-                        for (var i = 0; i < length; i++) {
-                            values += (array[i]);
-                        }
-
-                        var average = values / length;
-
-                        return Math.round(average - 40)
-
-                    } // end fn stream
-                },
-                function(err) {
-                    console.log("The following error occured: " + err.name);
-                });
-        } else {
-            console.log("getUserMedia not supported");
-        }
-        return volume;
+                    console.log(Math.round(volume));
+                    if (sound.audioVolumeThreshold <= volume) {
+                        onAudioPeak()
+                    }
+                }
+            });
     }
 
 }
