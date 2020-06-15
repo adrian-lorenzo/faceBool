@@ -8,6 +8,8 @@ export class Sound {
     hitWallSoundFile: string
     passPhaseSoundFile: string;
 
+    audioVolumeThreshold = 90;
+
     constructor() {
         this.jumpSoundFile      = 'sound/jump.mp3';
         this.platformSoundFile  = 'sound/paltform.mp3';
@@ -67,6 +69,42 @@ export class Sound {
 
     changeGlobalVolume(vol:number){
         Howler.volume(vol);
+    }
+
+    setupMicrophoneListener(onAudioPeak: () => void) {
+        let sound = this
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then( (stream) => {
+                let audioContext = new window.AudioContext();
+                let analyser = audioContext.createAnalyser();
+                let microphone = audioContext.createMediaStreamSource(stream);
+                let processor = audioContext.createScriptProcessor(2048, 1, 1);
+
+                analyser.smoothingTimeConstant = 0.8;
+                analyser.fftSize = 1024;
+                
+                microphone.connect(analyser);
+                processor.connect(audioContext.destination);
+                analyser.connect(processor);
+
+                processor.onaudioprocess = function() {
+                    var array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    var values = 0;
+
+                    var length = array.length;
+                    for (var i = 0; i < length; i++) {
+                        values += (array[i]);
+                    }
+
+                    var volume = values / length;
+
+                    console.log(Math.round(volume));
+                    if (sound.audioVolumeThreshold <= volume) {
+                        onAudioPeak()
+                    }
+                }
+            });
     }
 
 }

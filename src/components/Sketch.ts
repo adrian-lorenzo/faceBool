@@ -5,6 +5,7 @@ import { relWidth, relHeight } from "../utils/uiUtils";
 import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
 
+
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
     
@@ -53,7 +54,6 @@ const Sketch = (p5: P5) => {
         runDetection();
         level1.run(p5, ballTexture, platformTexture);
     }
-
 
     p5.windowResized = () => {
         dimensions = { width: window.innerWidth, height: window.innerHeight };
@@ -133,6 +133,7 @@ const Sketch = (p5: P5) => {
         p5.text("Cargando...", relWidth(0.12), relHeight(0.94));
         p5.fill(255);
     }
+
 }
 
 export default Sketch;
