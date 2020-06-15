@@ -1,5 +1,5 @@
 import P5 from "p5";
-import Platform from "../components/Platform";
+import Platform from "./Platform";
 import Limit from "./Limit";
 
 export default class Stage {

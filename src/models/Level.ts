@@ -1,7 +1,7 @@
 import P5 from "p5";
-import Platform from "../components/Platform";
+import Platform from "./Platform";
 import Stage from "./Stage";
-import Ball from "../components/Ball";
+import Ball from "./Ball";
 import { relWidth, relHeight } from "../utils/uiUtils";
 import { Engine, Events, World, Composite } from "matter-js";
 import PlayerState, { PlayerAction } from "./PlayerAction";
