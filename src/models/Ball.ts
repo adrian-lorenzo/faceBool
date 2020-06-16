@@ -13,6 +13,7 @@ export default class Ball implements Entity {
     constructor(pos: Matter.Vector, radius: number) {
         this.entity = Bodies.circle(pos.x, pos.y, radius, {
             id: this.id,
+            mass: 100,
             density: radius * 0.08,
             friction: 0.1,
             frictionStatic: 0,
@@ -20,7 +21,7 @@ export default class Ball implements Entity {
             restitution: 0.8
         });
         this.torque = radius * 30;
-        this.jumpForce = -radius * 8;
+        this.jumpForce = -radius * 0.1;
     }
 
     draw(p5: P5, texture?: P5.Image) {

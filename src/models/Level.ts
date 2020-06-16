@@ -38,7 +38,7 @@ export default class Level {
     actions: Map<PlayerAction, Boolean> = new Map();
     playerState: PlayerState | undefined;
 
-    constructor(stages: Stage[], frameRate) {
+    constructor(stages: Stage[], frameRate: number) {
         this.stages = stages
         this.frameRate = frameRate
         World.add(this.engine.world, this.player.entity);
@@ -50,20 +50,23 @@ export default class Level {
 
     run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
         if (!this.hasStarted) return;
-        Engine.update(this.engine, 1000/this.frameRate);
 
+        Engine.update(this.engine, 1000/this.frameRate);
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
     }
 
     moveUserPlatform() {
-        if (this.playerState) {
-            this.userPlatform.translate({ 
+
+        if (this.playerState ) {
+            let move = { 
                 x: this.playerState.position.x - this.platformPosition.x, 
                 y: this.playerState.position.y - this.platformPosition.y 
-            });
+            };
             
+            this.userPlatform.translate(move);
+            //this.userPlatform.setVelocity(move);
             this.platformPosition = this.playerState.position;
             this.userPlatform.setAngle(Math.atan2(this.playerState.direction.y, this.playerState.direction.x));
         }
@@ -106,9 +109,9 @@ export default class Level {
     checkLimits = () => {
         if ((this.player.getPosition().x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
             (this.player.getPosition().x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
-            World.remove(this.engine.world, this.userPlatform.entity);
+            //World.remove(this.engine.world, this.userPlatform.entity);
         } else if (Composite.get(this.engine.world, this.userPlatform.entity.id, "body") === null) {
-            World.add(this.engine.world, this.userPlatform.entity);
+            //World.add(this.engine.world, this.userPlatform.entity);
         }
     }
 
