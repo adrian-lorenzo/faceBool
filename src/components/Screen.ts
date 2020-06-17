@@ -1,5 +1,6 @@
 import { relWidth, relHeight } from "../utils/uiUtils";
 import P5 from "p5";
+import Drawable from "../models/Drawable";
 
 export enum GameStates {
     MENU,
@@ -8,13 +9,7 @@ export enum GameStates {
     WIN
 }
 
-
-interface Screen {
-    drawScreen(p5: P5) 
-}
-
-
-export class MainScreen implements Screen{
+export class MainScreen implements Drawable{
     title:string;
     start:string;
     blink:number;
@@ -28,7 +23,7 @@ export class MainScreen implements Screen{
         this.blink = 0;
     }
 
-    drawScreen(p5:P5) {
+    draw(p5:P5) {
         p5.textFont(this.font);
         p5.background( 60, 81, 185 );
         p5.image(this.img,relWidth(-0.15),relHeight(-0.1));
@@ -52,7 +47,7 @@ export class MainScreen implements Screen{
 }
 
 
-export class DieScreen implements Screen{
+export class DieScreen implements Drawable{
     font;
     img;
     mesg:string;
@@ -64,7 +59,7 @@ export class DieScreen implements Screen{
         this.count = 0;
     }
 
-    drawScreen(p5:P5) {
+    draw(p5:P5) {
         p5.textFont(this.font);
         p5.background(255, 66, 66);
         p5.image(this.img,relWidth(-0.13),relHeight(-0.45));
@@ -89,7 +84,7 @@ export class DieScreen implements Screen{
     
 }
 
-export class WinScreen implements Screen{
+export class WinScreen implements Drawable{
     font;
     img;
     mesg:string;
@@ -103,7 +98,7 @@ export class WinScreen implements Screen{
         this.blink = 0;
     }
 
-    drawScreen(p5:P5) {
+    draw(p5:P5) {
         p5.background(157, 236, 241);
         p5.textFont(this.font);
         p5.image(this.img,relWidth(-0.25),relHeight(-0.45));

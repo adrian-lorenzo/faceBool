@@ -67,6 +67,9 @@ export default class Level {
             relWidth(0.03)
         )
         World.add(this.engine.world, this.player.entity);
+        this.currentStageIdx = 0;
+        World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
+
     }
 
     moveUserPlatform() {
@@ -129,9 +132,9 @@ export default class Level {
         }
     }
 
-    checkIfPLayerIsDeath(height:number): boolean {
+    checkIfPLayerIsDeath(): boolean {
         //console.log(this.player.getPosition());
-        return this.player.getPosition().y > height;
+        return this.player.getPosition().y > relHeight(1);
     }
 
     checkActions = () => {

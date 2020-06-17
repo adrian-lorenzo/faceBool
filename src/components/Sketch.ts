@@ -23,11 +23,11 @@ const Sketch = (p5: P5) => {
     const platformTexture = p5.loadImage('textures/platform_texture.jpg');
     const ballTexture = p5.loadImage('textures/basketball.jpg');
     const font = p5.loadFont('fonts/Roboto-Regular.ttf');
-    const fontTitule = p5.loadFont('fonts/Dark_Seed.otf');
+    const fontTitle = p5.loadFont('fonts/Dark_Seed.otf');
     const loader = new Loader({ x: relWidth(0), y: relHeight(0.9) }, font);
 
     let currentFrameRate = 60;
-    let sound:Sound;
+    let sound: Sound;
 
     p5.preload = () => {
         shader = p5.loadShader('shader.vert', 'shader.frag');
@@ -35,10 +35,10 @@ const Sketch = (p5: P5) => {
         shaderTexture.noStroke();
     }
 
-    let state:GameStates;
-    let menu:MainScreen;
-    let dieScreen:DieScreen;
-    let winScreen:WinScreen;
+    let state: GameStates;
+    let menu: MainScreen;
+    let dieScreen: DieScreen;
+    let winScreen: WinScreen;
 
 
     p5.setup = () => {
@@ -46,9 +46,9 @@ const Sketch = (p5: P5) => {
         p5.createCanvas(relWidth(1), relHeight(1), p5.WEBGL);
 
         state = GameStates.MENU;
-        menu  = new MainScreen(fontTitule, p5.loadImage('textures/baloncesto.png'));
-        dieScreen = new DieScreen(fontTitule, p5.loadImage('textures/death.png'));
-        winScreen = new WinScreen(fontTitule, p5.loadImage('textures/win.png'));
+        menu  = new MainScreen(fontTitle, p5.loadImage('textures/baloncesto.png'));
+        dieScreen = new DieScreen(fontTitle, p5.loadImage('textures/death.png'));
+        winScreen = new WinScreen(fontTitle, p5.loadImage('textures/win.png'));
         sound = new Sound();
 
         videoCapture = p5.createCapture(p5.VIDEO);
@@ -70,22 +70,22 @@ const Sketch = (p5: P5) => {
     p5.draw = () => {
         // Environment
         if(state === GameStates.MENU){
-            menu.drawScreen(p5);
+            menu.draw(p5);
         } else if (state === GameStates.GAME){
             p5.translate(-p5.width / 2, -p5.height / 2, 0);
             drawBackground();
             if (!hasEverythingLoaded) loader.draw(p5);
             runDetection();
             level1.run(p5, ballTexture, platformTexture);
-            if(level1.checkIfPLayerIsDeath(p5.height)){
+            if(level1.checkIfPLayerIsDeath()){
                 sound.playLoseSound();
                 state = GameStates.DIE;
                 level1.reset();
             }
         } else if (state === GameStates.DIE){
-            dieScreen.drawScreen(p5);
+            dieScreen.draw(p5);
         } else if (state === GameStates.WIN){
-            winScreen.drawScreen(p5);
+            winScreen.draw(p5);
         }
     }
 
