@@ -57,7 +57,19 @@ export default class Level {
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
     }
 
-    moveUserPlatform() {
+    reset(){
+        World.remove(this.engine.world, this.player.entity);
+        this.player = new Ball(
+            {
+                x: relWidth(0.05),
+                y: relWidth(0.05)
+            }, 
+            relWidth(0.03)
+        )
+        World.add(this.engine.world, this.player.entity);
+    }
+
+    moveUserPlatform() {
 
         if (this.playerState) {
             let move = {
@@ -77,6 +89,8 @@ export default class Level {
         Events.on(this.engine, "collisionStart", this.onCollisionStart);
         Events.on(this.engine, "collisionEnd", this.onCollisionEnd);
     }
+
+
 
     onPhysicsUpdate = () => {
         this.checkLimits();
@@ -113,6 +127,11 @@ export default class Level {
         } else if (Composite.get(this.engine.world, this.userPlatform.entity.id, "body") === null) {
             //World.add(this.engine.world, this.userPlatform.entity);
         }
+    }
+
+    checkIfPLayerIsDeath(height:number): boolean {
+        //console.log(this.player.getPosition());
+        return this.player.getPosition().y > height;
     }
 
     checkActions = () => {
