@@ -1,44 +1,75 @@
-# CIU Project
+# FACE BOOL 🏀 
 
-## Available Scripts
+## Authors
 
-In the project directory, you can run:
+- [AdrianLorenzoDev](https://github.com/AdrianLorenzoDev)
+- [kevinrosalesdev](https://github.com/kevinrosalesdev)
+- [BorjaZarco](https://github.com/BorjaZarco)
+- [miguel-kjh](https://github.com/miguel-kjh)
 
-### `yarn start`
+## Summary
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This is a class project of the [ULPGC](https://www.ulpgc.es/) for the subject *Creating User Interfaces*, which consists of the design of a prototype of multimodal interaction based on the detection of the presence of people. In our case, we have taken advantage of artificial intelligence face detection and microphone sound detection to create a platform game.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+This videogame proposes a series of levels divided by stages, in which the user will have to move the ball making it advance from stage to stage, using a new platform created from the position and the inclination of his head, taking as main reference his eyes, nose and ears.
 
-### `yarn test`
+## Demo 🎮
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p align="center">
+  <img src="media/demo.gif" alt="demo game">
+</p>
+<p align="center">
+  Figure 1: Game demo
+</p>
 
-### `yarn build`
+## How to Play?
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+All you need to play is:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+* A webcam cam
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* A microphone
 
-### `yarn eject`
+The game is quite intuitive:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Stand in front of the camera.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. When the model detects your face a platform will be created in front of you, this platform will move as you move your head either in position or at an angle.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3. Use the platform to catch the ball or push it.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+4. With the microphone you can make the ball jump by shouting or blowing.
 
-## Learn More
+## Install
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The first thing is to have **yarn** installed in your computer, it is the typescript package manager that we use, you can download it in the following [link](https://classic.yarnpkg.com/en/docs/install/#debian-stable).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Then you just need to clone this repository and install the dependencies.
+
+```bash
+    git clone https://github.com/AdrianLorenzoDev/ciuProject
+    cd ciuProject
+    yarn install
+```
+
+## Start Game🚀
+
+To start the game, use the following commands to run the program via Electron.
+
+```bash
+    yarn build
+    yarn electron-dev
+```
+
+
+## Dependencies
+
+At work we use a lot of dependencies, among them are:
+
+- [TypeScript](https://www.typescriptlang.org/)
+- [Electron-js](https://www.electronjs.org/)
+- [React-js](https://es.reactjs.org/)
+- [Howler-js](https://howlerjs.com/)
+- [Planck-js](https://piqnt.com/planck.js/)
+- [p5-js](https://p5js.org/es/)
+- [ngx-face-api-js](https://github.com/kamiazya/ngx-face-api-js)
