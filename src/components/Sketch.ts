@@ -17,7 +17,7 @@ const Sketch = (p5: P5) => {
     let shader;
     let shaderTexture;
     let time = 0;
-    const maxTime = 10 * 1000;
+    const maxTime = 60 * 1000;
     const platformTexture = p5.loadImage('platform_texture.jpg');
     const ballTexture = p5.loadImage('basketball.jpg');
     const font = p5.loadFont('Roboto-Regular.ttf')
