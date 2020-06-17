@@ -101,13 +101,13 @@ const level1Builder = () => {
             new Platform(
                 Vec2(
                     relWidth(0.9), 
-                    relHeight(0.8)
+                    relHeight(0.6)
                 ), 
                 {
                     width: relWidth(0.4), 
                     height: relHeight(0.05)
                 },
-                0.20
+                0.5
             )
         ], leftLimit, rightLimit),
         // State3
