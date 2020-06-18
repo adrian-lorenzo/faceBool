@@ -4,6 +4,8 @@ import { PlayerAction } from "../models/PlayerAction";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relHeight, relWidth } from "../utils/uiUtils";
 import { Loader } from "./Loader";
+import { GameStates, MainScreen, DieScreen, WinScreen } from "./Screen";
+import { Sound } from "./Sound";
 
 
 const Sketch = (p5: P5) => {
@@ -18,12 +20,14 @@ const Sketch = (p5: P5) => {
     let shaderTexture;
     let time = 0;
     const maxTime = 60 * 1000;
-    const platformTexture = p5.loadImage('platform_texture.jpg');
-    const ballTexture = p5.loadImage('basketball.jpg');
-    const font = p5.loadFont('Roboto-Regular.ttf')
+    const platformTexture = p5.loadImage('textures/platform_texture.jpg');
+    const ballTexture = p5.loadImage('textures/basketball.jpg');
+    const font = p5.loadFont('fonts/Roboto-Regular.ttf');
+    const fontTitle = p5.loadFont('fonts/Dark_Seed.otf');
     const loader = new Loader({ x: relWidth(0), y: relHeight(0.9) }, font);
 
     let currentFrameRate = 60;
+    let sound: Sound;
 
     p5.preload = () => {
         shader = p5.loadShader('shader.vert', 'shader.frag');
@@ -31,9 +35,22 @@ const Sketch = (p5: P5) => {
         shaderTexture.noStroke();
     }
 
+    let state: GameStates;
+    let menu: MainScreen;
+    let dieScreen: DieScreen;
+    let winScreen: WinScreen;
+
+
     p5.setup = () => {
         // Canvas setup
         p5.createCanvas(relWidth(1), relHeight(1), p5.WEBGL);
+
+        state = GameStates.MENU;
+        menu  = new MainScreen(fontTitle, p5.loadImage('textures/baloncesto.png'));
+        dieScreen = new DieScreen(fontTitle, p5.loadImage('textures/death.png'));
+        winScreen = new WinScreen(fontTitle, p5.loadImage('textures/win.png'));
+        sound = new Sound();
+
         videoCapture = p5.createCapture(p5.VIDEO);
         videoCapture.hide();
 
@@ -52,11 +69,24 @@ const Sketch = (p5: P5) => {
 
     p5.draw = () => {
         // Environment
-        p5.translate(-p5.width / 2, -p5.height / 2, 0);
-        drawBackground();
-        if (!hasEverythingLoaded) loader.draw(p5);
-        runDetection();
-        level1.run(p5, ballTexture, platformTexture);
+        if(state === GameStates.MENU){
+            menu.draw(p5);
+        } else if (state === GameStates.GAME){
+            p5.translate(-p5.width / 2, -p5.height / 2, 0);
+            drawBackground();
+            if (!hasEverythingLoaded) loader.draw(p5);
+            runDetection();
+            level1.run(p5, ballTexture, platformTexture);
+            if(level1.checkIfPLayerIsDeath()){
+                sound.playLoseSound();
+                state = GameStates.DIE;
+                level1.reset();
+            }
+        } else if (state === GameStates.DIE){
+            dieScreen.draw(p5);
+        } else if (state === GameStates.WIN){
+            winScreen.draw(p5);
+        }
     }
 
     p5.windowResized = () => {
@@ -76,6 +106,24 @@ const Sketch = (p5: P5) => {
 
         if (p5.key === 'W' || p5.key === 'w') {
             level1.actions.set(PlayerAction.Jump, true);
+        }
+
+        if ( p5.keyCode === p5.ENTER && state === GameStates.MENU) {
+            state = GameStates.GAME;
+        }
+
+        if ( p5.keyCode === p5.ENTER && state === GameStates.WIN) {
+            state = GameStates.MENU;
+        }
+
+        if ( (p5.key === 'y' || p5.key === 'Y') && state === GameStates.DIE) {
+            state = GameStates.GAME;
+            dieScreen.resetCount();
+        }
+
+        if ( (p5.key === 'n' || p5.key === 'N') && state === GameStates.DIE) {
+            state = GameStates.MENU;
+            dieScreen.resetCount();
         }
     }
 

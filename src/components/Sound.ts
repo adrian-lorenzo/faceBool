@@ -7,6 +7,7 @@ export class Sound {
     winSoundFile: string;
     hitWallSoundFile: string
     passPhaseSoundFile: string;
+    loseSoundFile:string;
 
     audioVolumeThreshold = 90;
 
@@ -17,11 +18,20 @@ export class Sound {
         this.winSoundFile       = 'sound/you_win.mp3';
         this.hitWallSoundFile   = 'sound/hit_wall.mp3';
         this.passPhaseSoundFile = 'sound/pass_phase.mp3';
+        this.loseSoundFile      = 'sound/lose.mp3'
     }
 
     playJumpSound(){
         let sound  =  new Howl({
             src: [this.jumpSoundFile],
+            volume: 0.2
+        });
+        sound.play();
+    }
+
+    playLoseSound(){
+        let sound  =  new Howl({
+            src: [this.loseSoundFile],
             volume: 0.2
         });
         sound.play();
