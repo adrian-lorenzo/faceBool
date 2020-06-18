@@ -80,11 +80,12 @@ const Sketch = (p5: P5) => {
             drawBackground();
             
             if (!hasEverythingLoaded) loader.draw(p5);
-            
             runDetection();
             currentLevel.run(p5, ballTexture, platformTexture);
+            sound.playMusic();
 
             if(currentLevel.checkIfPLayerIsDead()){
+                sound.stopMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
                 currentLevel = levelBuilders[levelBuildersIdx]();
@@ -129,11 +130,17 @@ const Sketch = (p5: P5) => {
         if ( (p5.key === 'y' || p5.key === 'Y') && state === GameStates.DIE) {
             state = GameStates.GAME;
             dieScreen.resetCount();
+            sound.stopLoseMusic();
         }
 
         if ( (p5.key === 'n' || p5.key === 'N') && state === GameStates.DIE) {
             state = GameStates.MENU;
             dieScreen.resetCount();
+            sound.stopLoseMusic();
+        }
+
+        if((p5.key === 'p' || p5.key === 'P')){
+            sound.pauseMusic();
         }
     }
 
