@@ -1,4 +1,3 @@
-import { HALF_PI, TWO_PI } from "../utils/constants";
 import Drawable from "../models/Drawable";
 import P5 from "p5";
 import { relWidth, relHeight } from "../utils/uiUtils";
