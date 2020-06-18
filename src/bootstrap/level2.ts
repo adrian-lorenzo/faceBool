@@ -5,81 +5,96 @@ import { relWidth, relHeight } from "../utils/uiUtils"
 import Limit, { Orientation } from "../models/Limit"
 import { Vec2 } from "planck-js"
 
-const leftLimit = new Limit(Vec2(0.2, 0), Orientation.LEFT);
+const bigLeftLimit = new Limit(Vec2(0.4, 0), Orientation.LEFT);
+const hugeLeftLimit = new Limit(Vec2(0.8, 0), Orientation.LEFT)
 const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 
-const level1Builder = () => {
+const level2Builder = () => {
     const stage1 = new Stage([
         new Platform(
-            Vec2(relWidth(0.075), relHeight(0.3)),
+            Vec2(relWidth(0.15), relHeight(0.3)),
             {
-                width: relWidth(0.25), 
+                width: relWidth(0.3), 
                 height: relHeight(0.05)
             },
-            0.75
+            0.3
         ),
         new Platform(
             Vec2(
-                relWidth(0.9),
+                relWidth(1),
                 relHeight(0.4)
             ),
             {
                 width: relWidth(0.3),
                 height: relHeight(0.05)
             },
-            0.30
+            0.10
         )
-    ], leftLimit, rightLimit);
+    ], bigLeftLimit, rightLimit);
 
     const stage2 = new Stage([
         new Platform(
             Vec2(
-                relWidth(0.725),
-                relHeight(0.7)
-            ),
+                relWidth(0.4), 
+                relHeight(0.95)
+            ), 
             {
-                width: relWidth(0.8),
+                width: relWidth(0.15), 
                 height: relHeight(0.05)
             },
-            1.57
-        ),
-
-        new Platform(
-            Vec2(
-                relWidth(0.725),
-                relHeight(0.05)
-            ),
-            {
-                width: relWidth(0.3),
-                height: relHeight(0.05)
-            },
-            1.57
+            0.05
         ),
         
         new Platform(
             Vec2(
                 relWidth(0.9), 
-                relHeight(0.5)
+                relHeight(0.2)
             ), 
             {
-                width: relWidth(0.4), 
+                width: relWidth(0.15), 
                 height: relHeight(0.05)
             },
-            0.2
+            0.05
         )
-    ], leftLimit, rightLimit)
+    ], bigLeftLimit, rightLimit)
 
     const stage3 = new Stage([
         new Platform(
             Vec2(
-                relWidth(0.5), 
-                relHeight(0.45)
+                relWidth(0.2), 
+                relHeight(0.2)
             ), 
             {
-                width: relWidth(1), 
+                width: relWidth(0.1), 
                 height: relHeight(0.05)
             },
+            0.25
         ),
+
+        new Platform(
+            Vec2(
+                relWidth(0.4), 
+                relHeight(0.3)
+            ), 
+            {
+                width: relWidth(0.1), 
+                height: relHeight(0.05)
+            },
+            0.25
+        ),
+
+        new Platform(
+            Vec2(
+                relWidth(0.6), 
+                relHeight(0.4)
+            ), 
+            {
+                width: relWidth(0.1), 
+                height: relHeight(0.05)
+            },
+            0.25
+        ),
+
         new Platform(
             Vec2(
                 relWidth(0.9),
@@ -91,10 +106,10 @@ const level1Builder = () => {
             },
             0.5
         )
-    ], leftLimit, rightLimit)
+    ], hugeLeftLimit, rightLimit)
 
     return new Level(
-        relWidth(0.36),
+        relWidth(0.34),
         [
             stage1,
             stage2,
@@ -102,4 +117,4 @@ const level1Builder = () => {
         ], 60);
 }
 
-export default level1Builder;
+export default level2Builder;
