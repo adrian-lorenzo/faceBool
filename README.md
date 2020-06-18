@@ -28,7 +28,7 @@ This videogame proposes a series of levels divided by stages, in which the user 
 
 All you need to play is:
 
-* A webcamcam
+* A webcam
 
 * A microphone
 
