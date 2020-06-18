@@ -1,11 +1,11 @@
 import P5 from "p5";
-import Ball from "./Ball";
-import { relWidth, relHeight } from "../utils/uiUtils";
-import PlayerState, { PlayerAction } from "./PlayerAction";
+import { Contact, Vec2, World } from "planck-js";
 import { Sound } from "../components/Sound";
-import { World, Vec2, Contact } from "planck-js";
 import { mettersToPixels } from "../utils/ppmUtils";
+import { relHeight, relWidth } from "../utils/uiUtils";
+import Ball from "./Ball";
 import Platform from "./Platform";
+import PlayerState, { PlayerAction } from "./PlayerAction";
 import Stage from "./Stage";
 
 export default class Level {
@@ -26,7 +26,7 @@ export default class Level {
     userPlatform: Platform;
 
     player = new Ball(
-        Vec2(relWidth(0.01), relWidth(-0.05)), 
+        Vec2(relWidth(0.01), relWidth(-0.05)),
         relWidth(0.03),
         this.world
     );
@@ -63,19 +63,19 @@ export default class Level {
         if (!this.hasStarted) return;
 
         if (!this.isPaused) {
-            this.world.step(1/this.frameRate);
+            this.world.step(1 / this.frameRate);
             this.onPhysicsUpdate();
         }
-        
+
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
-    } 
+    }
 
-    moveUserPlatform = () => {
-        if (this.playerState) {
+    moveUserPlatform = () => {
+        if (this.playerState) {
             this.userPlatform.translate(
-                this.playerState.position, 
+                this.playerState.position,
                 Math.atan2(this.playerState.direction.y, this.playerState.direction.x)
             );
         }
@@ -97,10 +97,10 @@ export default class Level {
         const bodyA = fixtureA.getBody();
         const bodyB = fixtureB.getBody();
 
-        if (bodyA.getUserData() === this.player.entity.getUserData() 
+        if (bodyA.getUserData() === this.player.entity.getUserData()
             || bodyB.getUserData() === this.player.entity.getUserData()) {
-                
-            if ((bodyA.getUserData() !== this.userPlatform.entity.getUserData() 
+
+            if ((bodyA.getUserData() !== this.userPlatform.entity.getUserData()
                 && bodyB.getUserData() !== this.userPlatform.entity.getUserData())
                 || this.player.entity.getFixtureList()?.isSensor()) {
                 this.sound.playPlatformSound();
@@ -111,7 +111,7 @@ export default class Level {
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
 
-            if (bodyA.getUserData() === lastPlatform.entity.getUserData() 
+            if (bodyA.getUserData() === lastPlatform.entity.getUserData()
                 || bodyB.getUserData() === lastPlatform.entity.getUserData()) {
                 this.actions.set(PlayerAction.AtLastPlatform, true);
             }
@@ -124,7 +124,7 @@ export default class Level {
         const bodyA = fixtureA.getBody();
         const bodyB = fixtureB.getBody();
 
-        if (bodyA.getUserData() === this.player.entity.getUserData() 
+        if (bodyA.getUserData() === this.player.entity.getUserData()
             || bodyB.getUserData() === this.player.entity.getUserData()) {
             this.player.isOnGround = false;
         }
@@ -136,10 +136,10 @@ export default class Level {
 
     checkLimits = () => {
         const playerPosition = this.player.getPosition();
-        if ((playerPosition.x <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit.x) 
+        if ((playerPosition.x <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit.x)
             && playerPosition.y >= relWidth(this.stages[this.currentStageIdx].leftLimit.limit.y))
             || (playerPosition.x >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit.x)
-            && playerPosition.y >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit.y))) {
+                && playerPosition.y >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit.y))) {
             this.userPlatform.entity.getFixtureList()?.setSensor(true);
         } else if (!this.player.entity.getFixtureList()?.isSensor()) {
             this.userPlatform.entity.getFixtureList()?.setSensor(false);
@@ -173,11 +173,11 @@ export default class Level {
         if (this.actions.get(PlayerAction.AtLastPlatform)) {
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
-            if (this.player.getPosition().x >= lastPlatform.getPosition().x) {
+            if (this.player.getPosition().x >= lastPlatform.getPosition().x) {
                 this.startTranslationToNewStage();
                 this.actions.set(PlayerAction.AtLastPlatform, false);
             }
-    
+
         }
 
         if (this.actions.get(PlayerAction.TranslateStage)) {
@@ -209,7 +209,7 @@ export default class Level {
                 platform.translate(Vec2(pos.x - relWidth(0.03), pos.y), entity.getAngle());
             }
         });
-        
+
         const playerPosition = this.player.getPosition()
         if (playerPosition) {
             this.player.translate(Vec2(playerPosition.x - relWidth(0.03), playerPosition.y));
@@ -225,8 +225,8 @@ export default class Level {
         this.stages[this.currentStageIdx].platforms
             .unshift(this.stages[this.currentStageIdx - 1].platforms[this.stages[this.currentStageIdx - 1].platforms.length - 1]);
 
-        this.stages[this.currentStageIdx-1].platforms.forEach((platform, index) => {
-            if (index === this.stages[this.currentStageIdx-1].platforms.length - 1) return;
+        this.stages[this.currentStageIdx - 1].platforms.forEach((platform, index) => {
+            if (index === this.stages[this.currentStageIdx - 1].platforms.length - 1) return;
             if (platform.entity) {
                 this.world.destroyBody(platform.entity);
             }

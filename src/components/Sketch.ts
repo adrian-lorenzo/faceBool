@@ -103,8 +103,9 @@ const Sketch = (p5: P5) => {
             runDetection();
             currentLevel.run(p5, ballTexture, platformTexture);
             sound.playGameMusic();
+            drawTime();
 
-            if (currentLevel.checkIfPLayerIsDead()) {
+            if (currentLevel.checkIfPLayerIsDead() || (Date.now() - time) > maxTime) {
                 sound.stopGameMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
@@ -162,17 +163,16 @@ const Sketch = (p5: P5) => {
                 restartLevel();
                 state = GameStates.GAME;
                 p5.tint(255, 255);
-                currentLevel.isPaused = false;
-                time += Date.now() - timePaused;
                 timePaused = 0;
+                currentLevel.isPaused = false;
             }
 
             if (p5.keyCode === p5.ESCAPE) {
                 state = GameStates.GAME;
                 p5.tint(255, 255);
                 time += Date.now() - timePaused;
-                currentLevel.isPaused = false;
                 timePaused = 0;
+                currentLevel.isPaused = false;
             }
         }
 
@@ -184,6 +184,7 @@ const Sketch = (p5: P5) => {
                     levelBuildersIdx = menu.indexOption - 1;
                     currentLevel = levelBuilders[levelBuildersIdx]();
                     currentLevel.hasStarted = true;
+                    time = Date.now();
                     state = GameStates.GAME;
                     sound.stopMenuMusic();
                 }
@@ -234,6 +235,15 @@ const Sketch = (p5: P5) => {
         if (p5.key === 'W' || p5.key === 'w') {
             currentLevel.actions.set(PlayerAction.Jump, false);
         }
+    }
+
+    function drawTime() {
+        p5.push();
+        p5.fill(255);
+        p5.textSize(32);
+        p5.text(`${((maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 50, 50, 50);
+        p5.pop();
+
     }
 
     function restartLevel() {
