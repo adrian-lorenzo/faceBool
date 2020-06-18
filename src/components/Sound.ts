@@ -1,80 +1,115 @@
 import {Howl, Howler} from 'howler';
 
 export class Sound {
-    jumpSoundFile: string;
-    platformSoundFile: string;
-    moveSoundFile: string;
-    winSoundFile: string;
-    hitWallSoundFile: string
-    passPhaseSoundFile: string;
-    loseSoundFile:string;
+    platformSound: Howl;
+    moveSound: Howl;
+    winSound: Howl;
+    hitWallSound: Howl;
+    passPhaseSound: Howl;
+    loseSound: Howl;
+    jumpSound: Howl;
+    generalMusic: Howl;
+    menuMusic: Howl;
 
     audioVolumeThreshold = 90;
+    pause = false;
 
     constructor() {
-        this.jumpSoundFile      = 'sound/jump.mp3';
-        this.platformSoundFile  = 'sound/paltform.mp3';
-        this.moveSoundFile      = 'sound/move_state.mp3';
-        this.winSoundFile       = 'sound/you_win.mp3';
-        this.hitWallSoundFile   = 'sound/hit_wall.mp3';
-        this.passPhaseSoundFile = 'sound/pass_phase.mp3';
-        this.loseSoundFile      = 'sound/lose.mp3'
+        this.jumpSound =    new Howl({
+            src: ['sound/jump.mp3'],
+            volume: 0.2
+        });
+        this.platformSound  = new Howl({
+            src: ['sound/paltform.mp3'],
+            volume: 0.1
+        });
+        this.moveSound = new Howl({
+            src: ['sound/move_state.mp3'],
+            volume: 0.05
+        });
+        this.winSound = new Howl({
+            src: ['sound/you_win.mp3'],
+            volume: 0.1
+        });
+        this.hitWallSound   =  new Howl({
+            src: ['sound/hit_wall.mp3'],
+            volume: 0.1
+        });
+        this.passPhaseSound = new Howl({
+            src: ['sound/pass_phase.mp3'],
+            volume: 0.1
+        });
+        this.loseSound = new Howl({
+            src: ['sound/lose.mp3'],
+            volume: 0.2
+        });
+        this.generalMusic = new Howl({
+            src: ['sound/general.mp3'],
+            volume: 0.15,
+            loop: true
+        });
+        this.menuMusic = new Howl({
+            src: ['sound/menu.mp3'],
+            volume: 0.15,
+            loop: true
+        });
     }
 
     playJumpSound(){
-        let sound  =  new Howl({
-            src: [this.jumpSoundFile],
-            volume: 0.2
-        });
-        sound.play();
+        this.jumpSound.play();
+    }
+
+    playGameMusic(){
+        if(!this.generalMusic.playing() && !this.pause) {
+            this.generalMusic.play();
+        }
+    }
+
+    playMenuMusic(){
+        if(!this.menuMusic.playing()) {
+            this.menuMusic.play();
+        }
+    }
+
+    stopMenuMusic(){
+        this.menuMusic.stop();
+    }
+
+    stopGameMusic(){
+        this.generalMusic.stop();
+    }
+
+    pauseGameMusic(){
+        this.pause = !this.pause;
+        if(this.pause) this.generalMusic.pause();
+    }
+
+    stopLoseMusic(){
+        this.loseSound.stop();
     }
 
     playLoseSound(){
-        let sound  =  new Howl({
-            src: [this.loseSoundFile],
-            volume: 0.2
-        });
-        sound.play();
+        this.loseSound.play();
     }
 
     playPlatformSound(){
-        let sound = new Howl({
-            src: [this.platformSoundFile],
-            volume: 0.1
-        });
-        sound.play();
+        this.platformSound.play();
     }
 
     playMoveSound(){
-        let sound = new Howl({
-            src: [this.moveSoundFile],
-            volume: 0.05
-        });
-        sound.play();
+        this.moveSound.play();
     }
 
     playPassPhase() {
-        let sound = new Howl({
-            src: [this.passPhaseSoundFile],
-            volume: 0.1
-        });
-        sound.play();
+        this.passPhaseSound.play();
     }
 
     playWin() {
-        let sound = new Howl({
-            src: [this.winSoundFile],
-            volume: 0.1
-        });
-        sound.play();
+        this.winSound.play();
     }
 
     playHitWall(){
-        let sound = new Howl({
-            src: [this.hitWallSoundFile],
-            volume: 0.1
-        });
-        sound.play();
+        this.hitWallSound.play();
     }
 
     changeGlobalVolume(vol:number){

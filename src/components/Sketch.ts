@@ -74,17 +74,19 @@ const Sketch = (p5: P5) => {
     p5.draw = () => {
         // Environment
         if(state === GameStates.MENU){
+            sound.playMenuMusic();
             menu.draw(p5);
         } else if (state === GameStates.GAME){
             p5.translate(-p5.width / 2, -p5.height / 2, 0);
             drawBackground();
             
             if (!hasEverythingLoaded) loader.draw(p5);
-            
             runDetection();
             currentLevel.run(p5, ballTexture, platformTexture);
+            sound.playGameMusic();
 
             if(currentLevel.checkIfPLayerIsDead()){
+                sound.stopGameMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
                 currentLevel = levelBuilders[levelBuildersIdx]();
@@ -120,6 +122,7 @@ const Sketch = (p5: P5) => {
 
         if (p5.keyCode === p5.ENTER && state === GameStates.MENU) {
             state = GameStates.GAME;
+            sound.stopMenuMusic();
         }
 
         if ( p5.keyCode === p5.ENTER && state === GameStates.WIN) {
@@ -129,11 +132,17 @@ const Sketch = (p5: P5) => {
         if ( (p5.key === 'y' || p5.key === 'Y') && state === GameStates.DIE) {
             state = GameStates.GAME;
             dieScreen.resetCount();
+            sound.stopLoseMusic();
         }
 
         if ( (p5.key === 'n' || p5.key === 'N') && state === GameStates.DIE) {
             state = GameStates.MENU;
             dieScreen.resetCount();
+            sound.stopLoseMusic();
+        }
+
+        if((p5.key === 'p' || p5.key === 'P') && state === GameStates.GAME){
+            sound.pauseGameMusic();
         }
     }
 
