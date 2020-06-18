@@ -1,5 +1,6 @@
 {
-  "name": "ciuproject",
+  "name": "faceBool",
+  "homepage": "./",
   "version": "0.1.0",
   "private": true,
   "main": "src/main.js",
@@ -36,7 +37,21 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-wdev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron-wdev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "build-electron": "mkdir build/electron && cp -r src/main.js build/electron",
+    "build-electron-win": "mkdir build/src && robocopy src/main.js build/electron /S",
+    "electron-package": "electron-builder build --mac --win -c.extraMetadata.main=build/electron/main.js -c.mac.identity=null --publish never"
+  },
+  "build": {
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "repo": "faceBool",
+      "owner": "AdriánLorenzoDev"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
