@@ -6,7 +6,7 @@ import Limit, { Orientation } from "../models/Limit"
 import { Vec2 } from "planck-js"
 
 const bigLeftLimit = new Limit(Vec2(0.4, 0), Orientation.LEFT);
-const hugeLeftLimit = new Limit(Vec2(0.8, 0), Orientation.LEFT);
+const hugeRightLimit = new Limit(Vec2(0.7, 0), Orientation.RIGHT);
 const smallLeftLimit = new Limit(Vec2(0.400, 0.3), Orientation.LEFT);
 const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 
@@ -235,7 +235,7 @@ const level3Builder = () => {
                 width: relWidth(0.15), 
                 height: relHeight(0.05)
             },
-            0.05
+            0.07
         )
     ], smallLeftLimit, rightLimit)
 
@@ -243,42 +243,54 @@ const level3Builder = () => {
         new Platform(
             Vec2(
                 relWidth(0.2), 
-                relHeight(0.2)
+                relHeight(0.6)
             ), 
             {
                 width: relWidth(0.1), 
                 height: relHeight(0.05)
             },
-            0.25
         ),
 
         new Platform(
             Vec2(
-                relWidth(0.4), 
-                relHeight(0.3)
+                relWidth(0.32), 
+                relHeight(0.45)
             ), 
             {
                 width: relWidth(0.1), 
                 height: relHeight(0.05)
             },
-            0.25
+            0.05
         ),
+
 
         new Platform(
             Vec2(
-                relWidth(0.6), 
-                relHeight(0.4)
-            ), 
+                relWidth(0.825),
+                relHeight(0.7)
+            ),
             {
-                width: relWidth(0.1), 
+                width: relWidth(0.8),
                 height: relHeight(0.05)
             },
-            0.25
+            1.57
         ),
 
         new Platform(
             Vec2(
-                relWidth(0.9),
+                relWidth(0.825),
+                relHeight(0.05)
+            ),
+            {
+                width: relWidth(0.3),
+                height: relHeight(0.05)
+            },
+            1.57
+        ),
+
+        new Platform(
+            Vec2(
+                relWidth(0.95),
                 relHeight(0.65)
             ),
             {
@@ -287,11 +299,12 @@ const level3Builder = () => {
             },
             0.5
         )
-    ], hugeLeftLimit, rightLimit)
+    ], smallLeftLimit, hugeRightLimit)
 
     return new Level(
         relWidth(0.20),
         [
+            stage1,
             stage2,
             stage3
         ], 60);
