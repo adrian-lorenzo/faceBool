@@ -9,12 +9,14 @@ import Platform from "./Platform";
 import Stage from "./Stage";
 
 export default class Level {
+    initialStages: Stage[]
     stages: Stage[];
     frameRate: number;
 
     sound = new Sound();
 
-    world = World({ gravity: Vec2(0, 14)});
+    gravity = Vec2(0, 14)
+    world = World({ gravity: this.gravity });
     currentStageIdx = 0;
     hasStarted = false;
     
@@ -40,14 +42,14 @@ export default class Level {
     actions: Map<PlayerAction, Boolean> = new Map();
     playerState: PlayerState | undefined;
 
-    constructor(stages: Stage[], frameRate: number, world?: World) {
-        this.stages = stages
+    constructor(stages: Stage[], frameRate: number) {
+        this.stages = stages.slice();
+        this.initialStages = stages;
         this.frameRate = frameRate
 
         this.stages[this.currentStageIdx].platforms.forEach((platform) => {
             platform.init(this.world);
         });
-
         this.subscribeActions();
         this.sound.setupMicrophoneListener(this.onAudioPeak);
     }
@@ -56,23 +58,13 @@ export default class Level {
         if (!this.hasStarted) return;
         this.world.step(1/this.frameRate);
         this.onPhysicsUpdate();
+        
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
-    }
+    } 
 
-    reset(){
-        this.world = new World();
-        this.player.init(this.world);
-        this.userPlatform.init(this.world);
-
-        this.currentStageIdx = 0;
-        this.stages[this.currentStageIdx].platforms.forEach((platform) => {
-            platform.init(this.world);
-        });
-    }
-
-    moveUserPlatform() {
+    moveUserPlatform = () => {
         if (this.playerState) {
             this.userPlatform.translate(
                 this.playerState.position, 
@@ -81,12 +73,10 @@ export default class Level {
         }
     }
 
-    subscribeActions() {
+    subscribeActions = () => {
         this.world.on("begin-contact", this.onCollisionStart);
         this.world.on("end-contact", this.onCollisionEnd);
     }
-
-
 
     onPhysicsUpdate = () => {
         this.checkLimits();
@@ -94,7 +84,6 @@ export default class Level {
     }
 
     onCollisionStart = (contact: Contact) => {
-        console.log("collisionStart");
         const fixtureA = contact.getFixtureA();
         const fixtureB = contact.getFixtureB();
         const bodyA = fixtureA.getBody();
@@ -116,7 +105,6 @@ export default class Level {
     }
 
     onCollisionEnd = (contact: Contact) => {
-        console.log("collisionEnd");
         const fixtureA = contact.getFixtureA();
         const fixtureB = contact.getFixtureB();
         const bodyA = fixtureA.getBody();
@@ -142,8 +130,7 @@ export default class Level {
         }
     }
 
-    checkIfPLayerIsDeath(): boolean {
-        //console.log(this.player.getPosition());
+    checkIfPLayerIsDead = () => {
         return this.player.getPosition().y > relHeight(1);
     }
 

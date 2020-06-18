@@ -1,5 +1,4 @@
 import P5 from "p5";
-import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relHeight, relWidth } from "../utils/uiUtils";
@@ -7,6 +6,7 @@ import { Loader } from "./Loader";
 import { GameStates, MainScreen, DieScreen, WinScreen } from "./Screen";
 import { Sound } from "./Sound";
 import { Vec2 } from "planck-js";
+import level1Builder from "../bootstrap/level1";
 
 
 const Sketch = (p5: P5) => {
@@ -15,7 +15,7 @@ const Sketch = (p5: P5) => {
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
-    let isDetecting = true;
+    let isDetecting = false;
     let hasEverythingLoaded = false;
     let shader;
     let shaderTexture;
@@ -26,6 +26,10 @@ const Sketch = (p5: P5) => {
     const font = p5.loadFont('fonts/Roboto-Regular.ttf');
     const fontTitle = p5.loadFont('fonts/Dark_Seed.otf');
     const loader = new Loader(Vec2(relWidth(0), relHeight(0.9)), font);
+    
+    let levelBuildersIdx = 0;
+    let levelBuilders = [level1Builder];
+    let currentLevel = levelBuilders[levelBuildersIdx]();
 
     let currentFrameRate = 60;
     let sound: Sound;
@@ -60,8 +64,7 @@ const Sketch = (p5: P5) => {
 
         faceDetectionService.loadModel()
         setTimeout(() => {
-            isDetecting = false;
-            level1.hasStarted = true;
+            currentLevel.hasStarted = true;
             hasEverythingLoaded = true;
             time = Date.now();
             p5.tint(255, 255);
@@ -75,13 +78,17 @@ const Sketch = (p5: P5) => {
         } else if (state === GameStates.GAME){
             p5.translate(-p5.width / 2, -p5.height / 2, 0);
             drawBackground();
+            
             if (!hasEverythingLoaded) loader.draw(p5);
+            
             runDetection();
-            level1.run(p5, ballTexture, platformTexture);
-            if(level1.checkIfPLayerIsDeath()){
+            currentLevel.run(p5, ballTexture, platformTexture);
+
+            if(currentLevel.checkIfPLayerIsDead()){
                 sound.playLoseSound();
                 state = GameStates.DIE;
-                level1.reset();
+                currentLevel = levelBuilders[levelBuildersIdx]();
+                currentLevel.hasStarted = true;
             }
         } else if (state === GameStates.DIE){
             dieScreen.draw(p5);
@@ -97,19 +104,21 @@ const Sketch = (p5: P5) => {
 
 
     p5.keyPressed = () => {
-        if (p5.key === 'D' || p5.key === 'd') {
-            level1.actions.set(PlayerAction.MoveRight, true);
+        if (state === GameStates.GAME) {
+            if (p5.key === 'D' || p5.key === 'd') {
+                currentLevel.actions.set(PlayerAction.MoveRight, true);
+            }
+    
+            if (p5.key === 'A' || p5.key === 'a') {
+                currentLevel.actions.set(PlayerAction.MoveLeft, true);
+            }
+    
+            if (p5.key === 'W' || p5.key === 'w') {
+                currentLevel.actions.set(PlayerAction.Jump, true);
+            }
         }
 
-        if (p5.key === 'A' || p5.key === 'a') {
-            level1.actions.set(PlayerAction.MoveLeft, true);
-        }
-
-        if (p5.key === 'W' || p5.key === 'w') {
-            level1.actions.set(PlayerAction.Jump, true);
-        }
-
-        if ( p5.keyCode === p5.ENTER && state === GameStates.MENU) {
+        if (p5.keyCode === p5.ENTER && state === GameStates.MENU) {
             state = GameStates.GAME;
         }
 
@@ -131,15 +140,15 @@ const Sketch = (p5: P5) => {
 
     p5.keyReleased = () => {
         if (p5.key === 'D' || p5.key === 'd') {
-            level1.actions.set(PlayerAction.MoveRight, false);
+            currentLevel.actions.set(PlayerAction.MoveRight, false);
         }
 
         if (p5.key === 'A' || p5.key === 'a') {
-            level1.actions.set(PlayerAction.MoveLeft, false);
+            currentLevel.actions.set(PlayerAction.MoveLeft, false);
         }
 
         if (p5.key === 'W' || p5.key === 'w') {
-            level1.actions.set(PlayerAction.Jump, false);
+            currentLevel.actions.set(PlayerAction.Jump, false);
         }
     }
 
@@ -163,23 +172,23 @@ const Sketch = (p5: P5) => {
     }
 
     function runDetection() {
-        if (!isDetecting) {
+        if ((!isDetecting) && hasEverythingLoaded) {
             isDetecting = true;
             faceDetectionService.getFace(videoCapture.elt)
                 .then(detection => {
                     if (detection) {
-                        const scaleX = dimensions.width / 600.;
-                        const scaleY = dimensions.height / 480.;
+                        const scaleX = dimensions.width / faceDetectionService.imageDimension.width;
+                        const scaleY = dimensions.height / faceDetectionService.imageDimension.height;
                         let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY};
                         let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY};
                         let position = Vec2((leftEye.x + rightEye.x) / 2., (leftEye.y + rightEye.y) / 2.);
                         let direction = Vec2(leftEye.x - rightEye.x, leftEye.y - rightEye.y);
 
-                        level1.playerState = {
+                        currentLevel.playerState = {
                             position: position,
                             direction: direction
                         }
-                        level1.actions.set(PlayerAction.MovePlatform, true);
+                        currentLevel.actions.set(PlayerAction.MovePlatform, true);
                     }
                 })
                 .finally(() => isDetecting = false)
