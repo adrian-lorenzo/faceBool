@@ -4,6 +4,7 @@ import Drawable from "../models/Drawable";
 
 export enum GameStates {
     MENU,
+    PAUSE,
     GAME,
     DIE,
     WIN

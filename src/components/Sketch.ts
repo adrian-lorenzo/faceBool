@@ -9,7 +9,19 @@ import { Vec2 } from "planck-js";
 import level1Builder from "../bootstrap/level1";
 import level2Builder from "../bootstrap/level2";
 import level3Builder from "../bootstrap/level3";
+import { PauseMenu } from "./PauseMenu";
+import { Remote, IpcRenderer } from "electron";
 
+declare global {
+  interface Window {
+    require: (module: 'electron') => {
+        ipcRenderer: IpcRenderer
+        remote: Remote
+    };
+  }
+}
+
+const { ipcRenderer, remote } = window.require('electron');
 
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
@@ -22,13 +34,15 @@ const Sketch = (p5: P5) => {
     let shader;
     let shaderTexture;
     let time = 0;
+
     const maxTime = 60 * 1000;
     const platformTexture = p5.loadImage('textures/platform_texture.jpg');
     const ballTexture = p5.loadImage('textures/basketball.jpg');
     const font = p5.loadFont('fonts/Roboto-Regular.ttf');
     const fontTitle = p5.loadFont('fonts/Dark_Seed.otf');
     const loader = new Loader(Vec2(relWidth(0), relHeight(0.9)), font);
-    
+    const pauseMenu = new PauseMenu(Vec2(relWidth(0.5), relHeight(0.5)), fontTitle);
+
     let levelBuildersIdx = 0;
     let levelBuilders = [level1Builder, level2Builder, level3Builder];
     let currentLevel = levelBuilders[levelBuildersIdx]();
@@ -91,11 +105,15 @@ const Sketch = (p5: P5) => {
                 sound.stopGameMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
-                currentLevel = levelBuilders[levelBuildersIdx]();
-                currentLevel.hasStarted = true;
+                restartLevel();
             }
         } else if (state === GameStates.DIE){
             dieScreen.draw(p5);
+        } else if (state === GameStates.PAUSE) {
+            p5.translate(-p5.width / 2, -p5.height / 2, 0);
+            drawBackground();
+            currentLevel.run(p5, ballTexture, platformTexture);
+            pauseMenu.draw(p5);
         } else if (state === GameStates.WIN){
             winScreen.draw(p5);
         }
@@ -119,6 +137,32 @@ const Sketch = (p5: P5) => {
     
             if (p5.key === 'W' || p5.key === 'w') {
                 currentLevel.actions.set(PlayerAction.Jump, true);
+            }
+
+            if (p5.key === " ") {
+                state = GameStates.PAUSE;
+                sound.stopGameMusic();
+                p5.tint(55, 100);
+                currentLevel.isPaused = true;
+            }
+        }
+
+        if (state === GameStates.PAUSE) {
+            if (p5.key === 'Q' || p5.key === 'q') {
+                remote.app.quit();
+            }
+    
+            if (p5.key === 'R' || p5.key === 'r') {
+                restartLevel();
+                state = GameStates.GAME;
+                p5.tint(255, 255);
+                currentLevel.isPaused = false;
+            }
+    
+            if (p5.keyCode === p5.ESCAPE) {
+                state = GameStates.GAME;
+                p5.tint(255, 255);
+                currentLevel.isPaused = false;
             }
         }
 
@@ -161,6 +205,11 @@ const Sketch = (p5: P5) => {
         if (p5.key === 'W' || p5.key === 'w') {
             currentLevel.actions.set(PlayerAction.Jump, false);
         }
+    }
+
+    function restartLevel() {
+        currentLevel = levelBuilders[levelBuildersIdx]();
+        currentLevel.hasStarted = true;
     }
 
     function drawBackground() {
