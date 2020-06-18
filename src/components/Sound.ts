@@ -9,6 +9,7 @@ export class Sound {
     loseSound: Howl;
     jumpSound: Howl;
     generalMusic: Howl;
+    menuMusic: Howl;
 
     audioVolumeThreshold = 90;
     pause = false;
@@ -44,7 +45,12 @@ export class Sound {
         });
         this.generalMusic = new Howl({
             src: ['sound/general.mp3'],
-            volume: 0.1,
+            volume: 0.15,
+            loop: true
+        });
+        this.menuMusic = new Howl({
+            src: ['sound/menu.mp3'],
+            volume: 0.15,
             loop: true
         });
     }
@@ -53,17 +59,27 @@ export class Sound {
         this.jumpSound.play();
     }
 
-    playMusic(){
+    playGameMusic(){
         if(!this.generalMusic.playing() && !this.pause) {
             this.generalMusic.play();
         }
     }
 
-    stopMusic(){
+    playMenuMusic(){
+        if(!this.menuMusic.playing()) {
+            this.menuMusic.play();
+        }
+    }
+
+    stopMenuMusic(){
+        this.menuMusic.stop();
+    }
+
+    stopGameMusic(){
         this.generalMusic.stop();
     }
 
-    pauseMusic(){
+    pauseGameMusic(){
         this.pause = !this.pause;
         if(this.pause) this.generalMusic.pause();
     }

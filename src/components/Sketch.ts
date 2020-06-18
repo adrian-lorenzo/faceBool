@@ -74,6 +74,7 @@ const Sketch = (p5: P5) => {
     p5.draw = () => {
         // Environment
         if(state === GameStates.MENU){
+            sound.playMenuMusic();
             menu.draw(p5);
         } else if (state === GameStates.GAME){
             p5.translate(-p5.width / 2, -p5.height / 2, 0);
@@ -82,10 +83,10 @@ const Sketch = (p5: P5) => {
             if (!hasEverythingLoaded) loader.draw(p5);
             runDetection();
             currentLevel.run(p5, ballTexture, platformTexture);
-            sound.playMusic();
+            sound.playGameMusic();
 
             if(currentLevel.checkIfPLayerIsDead()){
-                sound.stopMusic();
+                sound.stopGameMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
                 currentLevel = levelBuilders[levelBuildersIdx]();
@@ -121,6 +122,7 @@ const Sketch = (p5: P5) => {
 
         if (p5.keyCode === p5.ENTER && state === GameStates.MENU) {
             state = GameStates.GAME;
+            sound.stopMenuMusic();
         }
 
         if ( p5.keyCode === p5.ENTER && state === GameStates.WIN) {
@@ -139,8 +141,8 @@ const Sketch = (p5: P5) => {
             sound.stopLoseMusic();
         }
 
-        if((p5.key === 'p' || p5.key === 'P')){
-            sound.pauseMusic();
+        if((p5.key === 'p' || p5.key === 'P') && state === GameStates.GAME){
+            sound.pauseGameMusic();
         }
     }
 
