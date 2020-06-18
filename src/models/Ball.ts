@@ -21,11 +21,11 @@ export default class Ball implements Entity {
         this.initialPosition = pixelsToMetters(pos);
         this.initialAngle = radius;
         this.radius = radius;
-        this.torque = radius * 30;
-        this.jumpForce = -radius;
+        this.torque = radius * 10;
+        this.jumpForce = -radius / 3;
 
         world = world ? world : new World()
-        
+
         this.entity = world.createDynamicBody({
             position: this.initialPosition,
             linearDamping: 1

@@ -14,7 +14,7 @@ export default class Level {
 
     sound = new Sound();
 
-    world = World({ gravity: Vec2(0, 40)});
+    world = World({ gravity: Vec2(0, 14)});
     currentStageIdx = 0;
     hasStarted = false;
     
@@ -129,7 +129,7 @@ export default class Level {
     }
 
     onAudioPeak = () => {
-        this.actions.set(PlayerAction.Jump, true);
+        //this.actions.set(PlayerAction.Jump, true);
     }
 
     checkLimits = () => {
