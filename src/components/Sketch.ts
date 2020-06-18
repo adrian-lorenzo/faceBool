@@ -1,25 +1,35 @@
 import P5 from "p5";
-import FaceDetectionService from "../services/FaceDetectionService";
-import { relWidth, relHeight } from "../utils/uiUtils";
 import level1 from "../bootstrap/level1";
 import { PlayerAction } from "../models/PlayerAction";
+import FaceDetectionService from "../services/FaceDetectionService";
+import { relHeight, relWidth } from "../utils/uiUtils";
 import { Loader } from "./Loader";
 
 
 const Sketch = (p5: P5) => {
     // MARK: - Face detection constants
-    
+
     const faceDetectionService = new FaceDetectionService();
     let videoCapture: P5.Element;
     let dimensions = { width: window.innerWidth, height: window.innerHeight };
     let isDetecting = true;
     let hasEverythingLoaded = false;
+    let shader;
+    let shaderTexture;
+    let time = 0;
+    const maxTime = 60 * 1000;
     const platformTexture = p5.loadImage('platform_texture.jpg');
     const ballTexture = p5.loadImage('basketball.jpg');
     const font = p5.loadFont('Roboto-Regular.ttf')
     const loader = new Loader({ x: relWidth(0), y: relHeight(0.9) }, font);
 
     let currentFrameRate = 60;
+
+    p5.preload = () => {
+        shader = p5.loadShader('shader.vert', 'shader.frag');
+        shaderTexture = p5.createGraphics(relWidth(1), relHeight(1), p5.WEBGL);
+        shaderTexture.noStroke();
+    }
 
     p5.setup = () => {
         // Canvas setup
@@ -32,11 +42,12 @@ const Sketch = (p5: P5) => {
 
         faceDetectionService.loadModel()
         setTimeout(() => {
-                isDetecting = false;
-                level1.hasStarted = true;
-                hasEverythingLoaded = true;
-                p5.tint(255, 255);
-            }, 4000);
+            isDetecting = false;
+            level1.hasStarted = true;
+            hasEverythingLoaded = true;
+            time = Date.now();
+            p5.tint(255, 255);
+        }, 4000);
     }
 
     p5.draw = () => {
@@ -88,7 +99,17 @@ const Sketch = (p5: P5) => {
         p5.push()
         p5.translate(relWidth(1), 0)
         p5.scale(-1.0, 1.0);
-        p5.image(videoCapture, 0, 0, relWidth(1), relHeight(1));
+        if (shader && shaderTexture) {
+            shader.setUniform('tex0', videoCapture);
+            shader.setUniform('resolution', [relWidth(1), relHeight(1)]);
+            shader.setUniform('current_time', Date.now() - time);
+            shader.setUniform('max_time', maxTime);
+            shaderTexture.shader(shader);
+            shaderTexture.rect(0, 0, relWidth(1), relHeight(1));
+            p5.image(shaderTexture, 0, 0, relWidth(1), relHeight(1));
+        } else {
+            p5.image(videoCapture, 0, 0, relWidth(1), relHeight(1));
+        }
         p5.pop();
     }
 
@@ -100,20 +121,20 @@ const Sketch = (p5: P5) => {
                     if (detection) {
                         const scaleX = dimensions.width / 600.;
                         const scaleY = dimensions.height / 480.;
-                        let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY};
-                        let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY};
+                        let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY };
+                        let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY };
                         let position = { x: (leftEye.x + rightEye.x) / 2., y: (leftEye.y + rightEye.y) / 2. }
                         let direction = { x: leftEye.x - rightEye.x, y: leftEye.y - rightEye.y };
 
                         level1.playerState = {
-                            position: position, 
-                            direction: direction 
+                            position: position,
+                            direction: direction
                         }
                         level1.actions.set(PlayerAction.MovePlatform, true);
                     }
                 })
                 .finally(() => isDetecting = false)
-        
+
         }
     }
 

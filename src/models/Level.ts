@@ -1,11 +1,11 @@
+import { Composite, Engine, Events, World } from "matter-js";
 import P5 from "p5";
-import Platform from "./Platform";
-import Stage from "./Stage";
-import Ball from "./Ball";
-import { relWidth, relHeight } from "../utils/uiUtils";
-import { Engine, Events, World, Composite } from "matter-js";
-import PlayerState, { PlayerAction } from "./PlayerAction";
 import { Sound } from "../components/Sound";
+import { relHeight, relWidth } from "../utils/uiUtils";
+import Ball from "./Ball";
+import Platform from "./Platform";
+import PlayerState, { PlayerAction } from "./PlayerAction";
+import Stage from "./Stage";
 
 export default class Level {
     stages: Stage[];
@@ -16,12 +16,12 @@ export default class Level {
     engine = Engine.create();
     currentStageIdx = 0;
     hasStarted = false;
-    
+
     player = new Ball(
         {
             x: relWidth(0.05),
             y: relWidth(0.05)
-        }, 
+        },
         relWidth(0.03)
     )
 
@@ -51,20 +51,20 @@ export default class Level {
     run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
         if (!this.hasStarted) return;
 
-        Engine.update(this.engine, 1000/this.frameRate);
+        Engine.update(this.engine, 1000 / this.frameRate);
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
     }
 
-    moveUserPlatform() {
+    moveUserPlatform() {
 
-        if (this.playerState ) {
-            let move = { 
-                x: this.playerState.position.x - this.platformPosition.x, 
-                y: this.playerState.position.y - this.platformPosition.y 
+        if (this.playerState) {
+            let move = {
+                x: this.playerState.position.x - this.platformPosition.x,
+                y: this.playerState.position.y - this.platformPosition.y
             };
-            
+
             this.userPlatform.translate(move);
             //this.userPlatform.setVelocity(move);
             this.platformPosition = this.playerState.position;
@@ -105,7 +105,7 @@ export default class Level {
     onAudioPeak = () => {
         this.actions.set(PlayerAction.Jump, true);
     }
- 
+
     checkLimits = () => {
         if ((this.player.getPosition().x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
             (this.player.getPosition().x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
@@ -130,15 +130,15 @@ export default class Level {
             this.player.moveRight();
         }
 
-        if (this.actions.get(PlayerAction.MovePlatform)) {
+        if (this.actions.get(PlayerAction.MovePlatform)) {
             this.moveUserPlatform();
             this.actions.set(PlayerAction.MovePlatform, false);
         }
 
-        if (this.actions.get(PlayerAction.AtLastPlatform)) {
+        if (this.actions.get(PlayerAction.AtLastPlatform)) {
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
-            if (this.player.getPosition().x >= lastPlatform.entity.position.x) {
+            if (this.player.getPosition().x >= lastPlatform.entity.position.x) {
                 this.startTranslationToNewStage();
                 this.actions.set(PlayerAction.AtLastPlatform, false);
             }
@@ -167,10 +167,10 @@ export default class Level {
         }
 
         this.stages[this.currentStageIdx].platforms.forEach((platform) => {
-            platform.translate({ x: relWidth(-0.03), y: 0});
+            platform.translate({ x: relWidth(-0.03), y: 0 });
         });
-        
-        this.player.translate({ x: relWidth(-0.03), y: 0});
+
+        this.player.translate({ x: relWidth(-0.03), y: 0 });
     }
 
     goNextStage = () => {
@@ -178,11 +178,11 @@ export default class Level {
         this.currentStageIdx++;
         World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
         this.stages[this.currentStageIdx].platforms
-            .unshift(this.stages[this.currentStageIdx-1].platforms[this.stages[this.currentStageIdx-1].platforms.length - 1]);
+            .unshift(this.stages[this.currentStageIdx - 1].platforms[this.stages[this.currentStageIdx - 1].platforms.length - 1]);
 
-        this.stages[this.currentStageIdx-1].platforms.forEach((platform, index) => {
-            if (index === this.stages[this.currentStageIdx-1].platforms.length - 1) return;
+        this.stages[this.currentStageIdx - 1].platforms.forEach((platform, index) => {
+            if (index === this.stages[this.currentStageIdx - 1].platforms.length - 1) return;
             World.remove(this.engine.world, platform.entity);
         });
-    } 
+    }
 }
