@@ -2,17 +2,17 @@ import { HALF_PI, TWO_PI } from "../utils/constants";
 import Drawable from "../models/Drawable";
 import P5 from "p5";
 import { relWidth } from "../utils/uiUtils";
-import { Vector } from "matter-js";
+import { Vec2 } from "planck-js";
 
 export class Loader implements Drawable {
-    position: Vector;
+    position: Vec2;
     font: P5.Font;
 
     private t = 0;
     private colors = ['red', 'blue', 'yellow', 'green'];
     private tickDelta = HALF_PI/64;
 
-    constructor(position: Vector, font: P5.Font) {
+    constructor(position: Vec2, font: P5.Font) {
         this.position = position;
         this.font = font;
     }

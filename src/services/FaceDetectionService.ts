@@ -3,6 +3,7 @@ import * as blazeface from "@tensorflow-models/blazeface";
 
 export default class FaceDetectionService {
     model?: blazeface.BlazeFaceModel
+    imageDimension = { width: 600. , height: 480. }
 
     async loadModel() {
         tf.setBackend("webgl");

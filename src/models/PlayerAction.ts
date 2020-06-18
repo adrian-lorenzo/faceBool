@@ -1,4 +1,4 @@
-import { Vector } from "matter-js";
+import { Vec2 } from "planck-js";
 
 export enum PlayerAction {
     Jump,
@@ -10,6 +10,6 @@ export enum PlayerAction {
 }
 
 export default interface PlayerState {
-    position: Vector
-    direction: Vector
+    position: Vec2,
+    direction: Vec2
 }

@@ -1,139 +1,136 @@
-import { Composite, Engine, Events, World } from "matter-js";
 import P5 from "p5";
-import { Sound } from "../components/Sound";
-import { relHeight, relWidth } from "../utils/uiUtils";
 import Ball from "./Ball";
-import Platform from "./Platform";
+import { relWidth, relHeight } from "../utils/uiUtils";
 import PlayerState, { PlayerAction } from "./PlayerAction";
+import { Sound } from "../components/Sound";
+import { World, Vec2, Contact } from "planck-js";
+import { mettersToPixels } from "../utils/ppmUtils";
+import Platform from "./Platform";
 import Stage from "./Stage";
 
 export default class Level {
+    initialStages: Stage[]
     stages: Stage[];
     frameRate: number;
 
     sound = new Sound();
 
-    engine = Engine.create();
+    gravity = Vec2(0, 14)
+    world = World({ gravity: this.gravity });
     currentStageIdx = 0;
     hasStarted = false;
-
-    player = new Ball(
-        {
-            x: relWidth(0.05),
-            y: relWidth(0.05)
-        },
-        relWidth(0.03)
-    )
-
-    platformPosition = { x: 0, y: 0 };
-    angle = 0;
+    
+    platformPosition = Vec2(0, 0);
     userPlatform = new Platform(
         this.platformPosition,
         {
             width: relWidth(0.38),
             height: relHeight(0.048)
-        }
+        },
+        0,
+        this.world
     );
+
+    player = new Ball(
+        Vec2(relWidth(0.05), relWidth(0.05)), 
+        relWidth(0.03),
+        this.world
+    );
+
+    angle = 0;
 
     actions: Map<PlayerAction, Boolean> = new Map();
     playerState: PlayerState | undefined;
 
     constructor(stages: Stage[], frameRate: number) {
-        this.stages = stages
+        this.stages = stages.slice();
+        this.initialStages = stages;
         this.frameRate = frameRate
-        World.add(this.engine.world, this.player.entity);
-        World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
-        World.add(this.engine.world, this.userPlatform.entity);
+
+        this.stages[this.currentStageIdx].platforms.forEach((platform) => {
+            platform.init(this.world);
+        });
         this.subscribeActions();
         this.sound.setupMicrophoneListener(this.onAudioPeak);
     }
 
     run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
         if (!this.hasStarted) return;
-
-        Engine.update(this.engine, 1000 / this.frameRate);
+        this.world.step(1/this.frameRate);
+        this.onPhysicsUpdate();
+        
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
         this.stages[this.currentStageIdx].draw(p5, platformTexture);
-    }
+    } 
 
-    reset(){
-        World.remove(this.engine.world, this.player.entity);
-        this.player = new Ball(
-            {
-                x: relWidth(0.05),
-                y: relWidth(0.05)
-            }, 
-            relWidth(0.03)
-        )
-        World.add(this.engine.world, this.player.entity);
-        this.currentStageIdx = 0;
-        World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
-
-    }
-
-    moveUserPlatform() {
-
-        if (this.playerState) {
-            let move = {
-                x: this.playerState.position.x - this.platformPosition.x,
-                y: this.playerState.position.y - this.platformPosition.y
-            };
-
-            this.userPlatform.translate(move);
-            //this.userPlatform.setVelocity(move);
-            this.platformPosition = this.playerState.position;
-            this.userPlatform.setAngle(Math.atan2(this.playerState.direction.y, this.playerState.direction.x));
+    moveUserPlatform = () => {
+        if (this.playerState) {
+            this.userPlatform.translate(
+                this.playerState.position, 
+                Math.atan2(this.playerState.direction.y, this.playerState.direction.x)
+            );
         }
     }
 
-    subscribeActions() {
-        Events.on(this.engine, "beforeUpdate", this.onPhysicsUpdate);
-        Events.on(this.engine, "collisionStart", this.onCollisionStart);
-        Events.on(this.engine, "collisionEnd", this.onCollisionEnd);
+    subscribeActions = () => {
+        this.world.on("begin-contact", this.onCollisionStart);
+        this.world.on("end-contact", this.onCollisionEnd);
     }
-
-
 
     onPhysicsUpdate = () => {
         this.checkLimits();
         this.checkActions();
     }
 
-    onCollisionStart = (event: Matter.IEventCollision<Engine>) => {
-        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
+    onCollisionStart = (contact: Contact) => {
+        const fixtureA = contact.getFixtureA();
+        const fixtureB = contact.getFixtureB();
+        const bodyA = fixtureA.getBody();
+        const bodyB = fixtureB.getBody();
+
+        if (bodyA.getUserData() === this.player.entity.getUserData() 
+            || bodyB.getUserData() === this.player.entity.getUserData()) {
             this.sound.playPlatformSound();
             this.player.isOnGround = true;
 
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
-            if (event.pairs[0].bodyA.id === lastPlatform.id || event.pairs[0].bodyB.id === lastPlatform.id) {
+
+            if (bodyA.getUserData() === lastPlatform.entity.getUserData() 
+                || bodyB.getUserData() === lastPlatform.entity.getUserData()) {
                 this.actions.set(PlayerAction.AtLastPlatform, true);
             }
         }
     }
 
-    onCollisionEnd = (event: Matter.IEventCollision<Engine>) => {
-        if (event.pairs[0].bodyA.id === this.player.id || event.pairs[0].bodyB.id === this.player.id) {
+    onCollisionEnd = (contact: Contact) => {
+        const fixtureA = contact.getFixtureA();
+        const fixtureB = contact.getFixtureB();
+        const bodyA = fixtureA.getBody();
+        const bodyB = fixtureB.getBody();
+
+        if (bodyA.getUserData() === this.player.entity.getUserData() 
+            || bodyB.getUserData() === this.player.entity.getUserData()) {
             this.player.isOnGround = false;
         }
     }
 
     onAudioPeak = () => {
-        this.actions.set(PlayerAction.Jump, true);
+        //this.actions.set(PlayerAction.Jump, true);
     }
 
     checkLimits = () => {
-        if ((this.player.getPosition().x) <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
-            (this.player.getPosition().x) >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
-            //World.remove(this.engine.world, this.userPlatform.entity);
-        } else if (Composite.get(this.engine.world, this.userPlatform.entity.id, "body") === null) {
-            //World.add(this.engine.world, this.userPlatform.entity);
+        const playerPosition = this.player.getPosition();
+        if (playerPosition.x <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
+            playerPosition.x >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
+            this.userPlatform.entity.getFixtureList()?.setSensor(true);
+        } else if (!this.player.entity.getFixtureList()?.isSensor()) {
+            this.userPlatform.entity.getFixtureList()?.setSensor(false);
         }
     }
 
-    checkIfPLayerIsDeath(): boolean {
-        //console.log(this.player.getPosition());
+    checkIfPLayerIsDead = () => {
         return this.player.getPosition().y > relHeight(1);
     }
 
@@ -160,10 +157,12 @@ export default class Level {
         if (this.actions.get(PlayerAction.AtLastPlatform)) {
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
-            if (this.player.getPosition().x >= lastPlatform.entity.position.x) {
+            if (this.player.getPosition().x >= lastPlatform.getPosition().x) {
+                    
                 this.startTranslationToNewStage();
                 this.actions.set(PlayerAction.AtLastPlatform, false);
             }
+    
         }
 
         if (this.actions.get(PlayerAction.TranslateStage)) {
@@ -181,7 +180,7 @@ export default class Level {
         const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
         const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
 
-        if ((lastPlatform.entity.position.x - (lastPlatform.dimensions.width / 2)) <= relWidth(0)) {
+        if ((lastPlatform.getPosition().x - (lastPlatform.dimensions.width / 2)) <= relWidth(0)) {
             this.actions.set(PlayerAction.TranslateStage, false);
             this.goNextStage();
             this.userPlatform.hidden = false;
@@ -189,22 +188,33 @@ export default class Level {
         }
 
         this.stages[this.currentStageIdx].platforms.forEach((platform) => {
-            platform.translate({ x: relWidth(-0.03), y: 0 });
+            const entity = platform.entity
+            if (entity) {
+                const pos = mettersToPixels(entity.getPosition());
+                platform.translate(Vec2(pos.x - relWidth(0.03), pos.y), entity.getAngle());
+            }
         });
-
-        this.player.translate({ x: relWidth(-0.03), y: 0 });
+        
+        const playerPosition = this.player.getPosition()
+        if (playerPosition) {
+            this.player.translate(Vec2(playerPosition.x - relWidth(0.03), playerPosition.y));
+        }
     }
 
     goNextStage = () => {
         if (this.currentStageIdx === this.stages.length - 1) return;
         this.currentStageIdx++;
-        World.add(this.engine.world, this.stages[this.currentStageIdx].platforms.map((platform) => platform.entity));
+        this.stages[this.currentStageIdx].platforms.forEach((platform) => {
+            platform.init(this.world);
+        });
         this.stages[this.currentStageIdx].platforms
             .unshift(this.stages[this.currentStageIdx - 1].platforms[this.stages[this.currentStageIdx - 1].platforms.length - 1]);
 
-        this.stages[this.currentStageIdx - 1].platforms.forEach((platform, index) => {
-            if (index === this.stages[this.currentStageIdx - 1].platforms.length - 1) return;
-            World.remove(this.engine.world, platform.entity);
+        this.stages[this.currentStageIdx-1].platforms.forEach((platform, index) => {
+            if (index === this.stages[this.currentStageIdx-1].platforms.length - 1) return;
+            if (platform.entity) {
+                this.world.destroyBody(platform.entity);
+            }
         });
     }
 }

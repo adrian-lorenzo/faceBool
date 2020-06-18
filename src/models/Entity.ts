@@ -1,7 +1,9 @@
-import P5 from "p5";
+import { Body, World } from "planck-js";
 import Drawable from "./Drawable";
 
 export default interface Entity extends Drawable {
     id: number
-    entity: Matter.Body
+    entity: Body
+
+    init: (world: World) => void
 }

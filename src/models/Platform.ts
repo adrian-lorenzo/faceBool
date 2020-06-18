@@ -1,14 +1,19 @@
-import { Bodies, Body } from "matter-js";
+import { World, Vec2, Body, Box } from "planck-js";
 import P5 from "p5";
 import { Size } from "./Size";
 import { getUniqueIdentifier } from "../utils/uiUtils";
 import Entity from "./Entity";
+import { PPM } from "../utils/constants";
+import { mettersToPixels, pixelsToMetters } from "../utils/ppmUtils";
 
 export default class Platform implements Entity {
     id: number = getUniqueIdentifier();
-    entity: Matter.Body
+    entity: Body
     dimensions: Size;
-    hidden = false
+    hidden = false;
+    initialPosition: Vec2;
+    initialAngle: number;
+
     texturePoints = [
         [0, 0],
         [1, 0],
@@ -16,49 +21,61 @@ export default class Platform implements Entity {
         [0, 1]
     ];
 
-    constructor(pos: Matter.Vector, dimensions: Size, angle: number = 0) {
-        this.entity = Bodies.rectangle(pos.x, pos.y, dimensions.width, dimensions.height, {
-            id: this.id,
-            isStatic: true,
-            inertia: Infinity,
-            mass: Infinity,
-            angle: angle,
-            // render: {
-            //     sprite: {
-            //         texture: 'platform_texture.png',
-            //         xScale: 2,
-            //         yScale: 2
-            //     }
-            // }
-        });
+    constructor(pos: Vec2, dimensions: Size, angle: number = 0, world?: World) {
+        this.initialPosition = pixelsToMetters(pos);
+        this.initialAngle = angle;
         this.dimensions = dimensions;
+        
+        world = world ? world : new World()
+        
+        this.entity = world.createKinematicBody({
+            position: this.initialPosition,
+            angle: this.initialAngle
+        });
+
+        this.entity.createFixture({
+            shape: Box(
+                (this.dimensions.width / PPM) / 2., 
+                (this.dimensions.height / PPM) / 2.
+            ),
+            friction: 20
+        });
+    }
+
+    init(world: World) {
+        this.entity = world.createKinematicBody({
+            position: this.initialPosition,
+            angle: this.initialAngle
+        });
+
+        this.entity.createFixture({
+            shape: Box(
+                (this.dimensions.width / PPM) / 2., 
+                (this.dimensions.height / PPM) / 2.
+            ),
+            friction: 20
+        }); 
     }
 
     draw(p5: P5, texture?: P5.Image) {
         if (this.hidden) return;
         p5.push();
         if (texture) { p5.texture(texture); }
-        p5.beginShape();
-        this.entity.vertices.forEach((vertex, i) => {
-            p5.vertex(vertex.x, vertex.y, 0, ...this.texturePoints[i]);
-        })
-        p5.endShape();
+
+        const position = mettersToPixels(this.entity.getPosition())
+        p5.translate(position.x, position.y);
+        p5.rotate(this.entity.getAngle());
+        p5.rectMode(p5.CENTER);
+        p5.rect(0, 0, this.dimensions.width, this.dimensions.height);
+
         p5.pop();
     }
 
-    translate(delta: Matter.Vector) {
-        Body.translate(this.entity, delta);
+    getPosition = () => {
+        return mettersToPixels(this.entity.getPosition());
     }
 
-    setPosition(position: Matter.Vector) {
-        Body.setPosition(this.entity, position);
-    }
-
-    setVelocity(delta: Matter.Vector) {
-        Body.setVelocity(this.entity, delta);
-    }
-
-    setAngle(radians: number) {
-        Body.setAngle(this.entity, radians);
+    translate(position: Vec2, angle: number) {
+        this.entity.setTransform(pixelsToMetters(position), angle);
     }
 }
