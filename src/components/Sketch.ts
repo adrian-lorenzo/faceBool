@@ -3,7 +3,7 @@ import { PlayerAction } from "../models/PlayerAction";
 import FaceDetectionService from "../services/FaceDetectionService";
 import { relHeight, relWidth } from "../utils/uiUtils";
 import { Loader } from "./Loader";
-import { GameStates, MainScreen, DieScreen, WinScreen } from "./Screen";
+import { GameStates, MainScreen, DieScreen, WinScreen, TutorialScreen } from "./Screen";
 import { Sound } from "./Sound";
 import { Vec2 } from "planck-js";
 import level1Builder from "../bootstrap/level1";
@@ -60,6 +60,7 @@ const Sketch = (p5: P5) => {
     let menu: MainScreen;
     let dieScreen: DieScreen;
     let winScreen: WinScreen;
+    let tutorial: TutorialScreen;
 
 
     p5.setup = () => {
@@ -70,6 +71,7 @@ const Sketch = (p5: P5) => {
         menu  = new MainScreen(fontTitle, p5.loadImage('textures/baloncesto.png'));
         dieScreen = new DieScreen(fontTitle, p5.loadImage('textures/death.png'));
         winScreen = new WinScreen(fontTitle, p5.loadImage('textures/win.png'));
+        tutorial  = new TutorialScreen(fontTitle, font);
         sound = new Sound();
 
         videoCapture = p5.createCapture(p5.VIDEO);
@@ -116,6 +118,8 @@ const Sketch = (p5: P5) => {
             pauseMenu.draw(p5);
         } else if (state === GameStates.WIN){
             winScreen.draw(p5);
+        } else if (state === GameStates.TUTORIAL){
+            tutorial.draw(p5);
         }
     }
 
@@ -166,9 +170,28 @@ const Sketch = (p5: P5) => {
             }
         }
 
-        if (p5.keyCode === p5.ENTER && state === GameStates.MENU) {
-            state = GameStates.GAME;
-            sound.stopMenuMusic();
+        if (p5.keyCode === p5.ENTER) {
+            if (state === GameStates.MENU) {
+                if(menu.indexOption === 0) {
+                    state = GameStates.TUTORIAL;
+                } else {
+                    levelBuildersIdx = menu.indexOption - 1;
+                    currentLevel = levelBuilders[levelBuildersIdx]();
+                    currentLevel.hasStarted = true;
+                    state = GameStates.GAME;
+                    sound.stopMenuMusic();
+                }   
+            } else if(state === GameStates.TUTORIAL){
+                state = GameStates.MENU;
+            }
+        }
+
+        if (p5.keyCode === p5.UP_ARROW && state === GameStates.MENU) {
+            menu.changeOption(-1);
+        }
+
+        if (p5.keyCode === p5.DOWN_ARROW && state === GameStates.MENU) {
+            menu.changeOption(1);
         }
 
         if ( p5.keyCode === p5.ENTER && state === GameStates.WIN) {
