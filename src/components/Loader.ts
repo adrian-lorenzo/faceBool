@@ -44,7 +44,7 @@ export class Loader implements Drawable {
         p5.fill('black');
         p5.textFont(this.font);
         p5.textSize(relWidth(0.015));
-        p5.text("¡Cargando!", this.position.x + padding/2, this.position.y + (circleSize * 3));
+        p5.text("¡Cargando!", this.position.x + 2 * padding, this.position.y + (circleSize * 3));
         this.tick();
         p5.pop();
     }

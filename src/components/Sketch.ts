@@ -7,6 +7,8 @@ import { GameStates, MainScreen, DieScreen, WinScreen } from "./Screen";
 import { Sound } from "./Sound";
 import { Vec2 } from "planck-js";
 import level1Builder from "../bootstrap/level1";
+import level2Builder from "../bootstrap/level2";
+import level3Builder from "../bootstrap/level3";
 
 
 const Sketch = (p5: P5) => {
@@ -28,7 +30,7 @@ const Sketch = (p5: P5) => {
     const loader = new Loader(Vec2(relWidth(0), relHeight(0.9)), font);
     
     let levelBuildersIdx = 0;
-    let levelBuilders = [level1Builder];
+    let levelBuilders = [level1Builder, level2Builder, level3Builder];
     let currentLevel = levelBuilders[levelBuildersIdx]();
 
     let currentFrameRate = 60;

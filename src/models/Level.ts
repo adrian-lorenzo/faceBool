@@ -19,20 +19,13 @@ export default class Level {
     world = World({ gravity: this.gravity });
     currentStageIdx = 0;
     hasStarted = false;
-    
+
+    platformSize: number;
     platformPosition = Vec2(0, 0);
-    userPlatform = new Platform(
-        this.platformPosition,
-        {
-            width: relWidth(0.38),
-            height: relHeight(0.048)
-        },
-        0,
-        this.world
-    );
+    userPlatform: Platform;
 
     player = new Ball(
-        Vec2(relWidth(0.05), relWidth(0.05)), 
+        Vec2(relWidth(0.01), relWidth(-0.05)), 
         relWidth(0.03),
         this.world
     );
@@ -42,10 +35,21 @@ export default class Level {
     actions: Map<PlayerAction, Boolean> = new Map();
     playerState: PlayerState | undefined;
 
-    constructor(stages: Stage[], frameRate: number) {
+    constructor(platformSize: number, stages: Stage[], frameRate: number) {
+        this.platformSize = platformSize;
         this.stages = stages.slice();
         this.initialStages = stages;
-        this.frameRate = frameRate
+        this.frameRate = frameRate;
+
+        this.userPlatform = new Platform(
+            this.platformPosition,
+            {
+                width: this.platformSize,
+                height: relHeight(0.045)
+            },
+            0,
+            this.world
+        );
 
         this.stages[this.currentStageIdx].platforms.forEach((platform) => {
             platform.init(this.world);
@@ -91,7 +95,13 @@ export default class Level {
 
         if (bodyA.getUserData() === this.player.entity.getUserData() 
             || bodyB.getUserData() === this.player.entity.getUserData()) {
-            this.sound.playPlatformSound();
+                
+            if ((bodyA.getUserData() !== this.userPlatform.entity.getUserData() 
+                && bodyB.getUserData() !== this.userPlatform.entity.getUserData())
+                || this.player.entity.getFixtureList()?.isSensor()) {
+                this.sound.playPlatformSound();
+            }
+
             this.player.isOnGround = true;
 
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
@@ -117,13 +127,15 @@ export default class Level {
     }
 
     onAudioPeak = () => {
-        //this.actions.set(PlayerAction.Jump, true);
+        this.actions.set(PlayerAction.Jump, true);
     }
 
     checkLimits = () => {
         const playerPosition = this.player.getPosition();
-        if (playerPosition.x <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit) ||
-            playerPosition.x >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit)) {
+        if ((playerPosition.x <= relWidth(this.stages[this.currentStageIdx].leftLimit.limit.x) 
+            && playerPosition.y >= relWidth(this.stages[this.currentStageIdx].leftLimit.limit.y))
+            || (playerPosition.x >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit.x)
+            && playerPosition.y >= relWidth(this.stages[this.currentStageIdx].rightLimit.limit.y))) {
             this.userPlatform.entity.getFixtureList()?.setSensor(true);
         } else if (!this.player.entity.getFixtureList()?.isSensor()) {
             this.userPlatform.entity.getFixtureList()?.setSensor(false);
@@ -158,7 +170,6 @@ export default class Level {
             const lastIndex = this.stages[this.currentStageIdx].platforms.length - 1;
             const lastPlatform = this.stages[this.currentStageIdx].platforms[lastIndex];
             if (this.player.getPosition().x >= lastPlatform.getPosition().x) {
-                    
                 this.startTranslationToNewStage();
                 this.actions.set(PlayerAction.AtLastPlatform, false);
             }
