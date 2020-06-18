@@ -9,9 +9,11 @@
 
 ## Summary
 
-This is a class project of the [ULPGC](https://www.ulpgc.es/) for the subject *Creating User Interfaces*, which consists of the design of a prototype of multimodal interaction based on the detection of the presence of people. In our case, we have taken advantage of artificial intelligence face detection and microphone sound detection to create a platform game.
+This is the final project of the _Creating User Interfaces_ subject of the Computer Engineering degree at [ULPGC](https://www.ulpgc.es/), which consists of the implementation of a prototype that integrates multimodal interaction based on the detection of people presence.
 
-This videogame proposes a series of levels divided by stages, in which the user will have to move the ball making it advance from stage to stage, using a new platform created from the position and the inclination of his head, taking as main reference his eyes, nose and ears.
+In our case, we have taken advantage of artificial intelligence based face detection and microphone sound detection to create a platform game.
+
+This videogame proposes a series of levels divided by stages, in which the user will have to move the ball making it move forward stage to stage, using a new platform created from the position and the inclination of his head, taking as main reference his eyes, nose and ears.
 
 ## Demo 🎮
 
@@ -26,7 +28,7 @@ This videogame proposes a series of levels divided by stages, in which the user 
 
 All you need to play is:
 
-* A webcam cam
+* A webcamcam
 
 * A microphone
 
@@ -34,7 +36,7 @@ The game is quite intuitive:
 
 1. Stand in front of the camera.
 
-2. When the model detects your face a platform will be created in front of you, this platform will move as you move your head either in position or at an angle.
+2. When the model detects your face a platform will be created in front of you. This platform will move as you move your head either in position or at an angle.
 
 3. Use the platform to catch the ball or push it.
 
@@ -42,7 +44,7 @@ The game is quite intuitive:
 
 ## Install
 
-The first thing is to have **yarn** installed in your computer, it is the typescript package manager that we use, you can download it in the following [link](https://classic.yarnpkg.com/en/docs/install/#debian-stable).
+The first thing is to have **yarn** installed in your computer, it is the Javascript/Typescript package manager that we use, you can download it in the following [link](https://classic.yarnpkg.com/en/docs/install/#debian-stable).
 
 Then you just need to clone this repository and install the dependencies.
 
@@ -72,4 +74,3 @@ At work we use a lot of dependencies, among them are:
 - [Howler-js](https://howlerjs.com/)
 - [Planck-js](https://piqnt.com/planck.js/)
 - [p5-js](https://p5js.org/es/)
-- [ngx-face-api-js](https://github.com/kamiazya/ngx-face-api-js)
