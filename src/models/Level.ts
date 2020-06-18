@@ -19,6 +19,7 @@ export default class Level {
     world = World({ gravity: this.gravity });
     currentStageIdx = 0;
     hasStarted = false;
+    isPaused = false;
 
     platformSize: number;
     platformPosition = Vec2(0, 0);
@@ -60,8 +61,11 @@ export default class Level {
 
     run = (p5: P5, ballTexture?: P5.Image, platformTexture?: P5.Image) => {
         if (!this.hasStarted) return;
-        this.world.step(1/this.frameRate);
-        this.onPhysicsUpdate();
+
+        if (!this.isPaused) {
+            this.world.step(1/this.frameRate);
+            this.onPhysicsUpdate();
+        }
         
         this.player.draw(p5, ballTexture);
         this.userPlatform.draw(p5, platformTexture);
