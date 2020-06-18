@@ -3,9 +3,9 @@
 ## Authors
 
 - [AdrianLorenzoDev](https://github.com/AdrianLorenzoDev)
-- [kevinrosalesdev](https://github.com/kevinrosalesdev)
 - [BorjaZarco](https://github.com/BorjaZarco)
 - [miguel-kjh](https://github.com/miguel-kjh)
+- [kevinrosalesdev](https://github.com/kevinrosalesdev)
 
 ## Summary
 
