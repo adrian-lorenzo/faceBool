@@ -6,6 +6,7 @@ import { relHeight, relWidth } from "../utils/uiUtils";
 import { Loader } from "./Loader";
 import { GameStates, MainScreen, DieScreen, WinScreen } from "./Screen";
 import { Sound } from "./Sound";
+import { Vec2 } from "planck-js";
 
 
 const Sketch = (p5: P5) => {
@@ -24,7 +25,7 @@ const Sketch = (p5: P5) => {
     const ballTexture = p5.loadImage('textures/basketball.jpg');
     const font = p5.loadFont('fonts/Roboto-Regular.ttf');
     const fontTitle = p5.loadFont('fonts/Dark_Seed.otf');
-    const loader = new Loader({ x: relWidth(0), y: relHeight(0.9) }, font);
+    const loader = new Loader(Vec2(relWidth(0), relHeight(0.9)), font);
 
     let currentFrameRate = 60;
     let sound: Sound;
@@ -169,10 +170,10 @@ const Sketch = (p5: P5) => {
                     if (detection) {
                         const scaleX = dimensions.width / 600.;
                         const scaleY = dimensions.height / 480.;
-                        let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY };
-                        let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY };
-                        let position = { x: (leftEye.x + rightEye.x) / 2., y: (leftEye.y + rightEye.y) / 2. }
-                        let direction = { x: leftEye.x - rightEye.x, y: leftEye.y - rightEye.y };
+                        let leftEye = { x: detection[1][0] * scaleX, y: detection[1][1] * scaleY};
+                        let rightEye = { x: detection[0][0] * scaleX, y: detection[0][1] * scaleY};
+                        let position = Vec2((leftEye.x + rightEye.x) / 2., (leftEye.y + rightEye.y) / 2.);
+                        let direction = Vec2(leftEye.x - rightEye.x, leftEye.y - rightEye.y);
 
                         level1.playerState = {
                             position: position,

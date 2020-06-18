@@ -1,66 +1,89 @@
-import { Bodies, Body } from "matter-js";
+import { World, Vec2, Body, Circle } from "planck-js";
 import P5 from "p5";
 import { getUniqueIdentifier } from "../utils/uiUtils";
 import Entity from "./Entity";
+import { PPM } from "../utils/constants";
+import { pixelsToMetters, mettersToPixels } from "../utils/ppmUtils";
 
 export default class Ball implements Entity {
     id: number = getUniqueIdentifier();
-    entity: Matter.Body;
+    
+    entity: Body;
     torque: number;
     jumpForce: number;
+    radius: number;
+    initialPosition: Vec2;
+    initialAngle: number;
+
     isOnGround: boolean = true;
 
-    constructor(pos: Matter.Vector, radius: number) {
-        this.entity = Bodies.circle(pos.x, pos.y, radius, {
-            id: this.id,
-            mass: 100,
-            density: radius * 0.08,
-            friction: 0.1,
-            frictionStatic: 0,
-            frictionAir: 0.02,
-            restitution: 0.8
-        });
+    constructor(pos: Vec2, radius: number, world?: World) {
+        this.initialPosition = pixelsToMetters(pos);
+        this.initialAngle = radius;
+        this.radius = radius;
         this.torque = radius * 30;
-        this.jumpForce = -radius * 0.1;
+        this.jumpForce = -radius;
+
+        world = world ? world : new World()
+        
+        this.entity = world.createDynamicBody({
+            position: this.initialPosition,
+            linearDamping: 1
+        });
+
+        this.entity.createFixture({
+            shape: Circle(this.radius/PPM),
+            density: 30,
+            friction: 2
+        });
+    }
+
+    init(world: World) {
+        this.entity = world.createDynamicBody({
+            position: this.initialPosition,
+            linearDamping: 1
+        });
+
+        this.entity.createFixture({
+            shape: Circle(this.radius/PPM),
+            density: 30,
+            friction: 2
+        });
     }
 
     draw(p5: P5, texture?: P5.Image) {
-        const radius = this.entity.circleRadius ? this.entity.circleRadius : 0
-
         p5.push();
         p5.fill(p5.color("black"));
-        // p5.rotateZ(this.rotation)
-        if (texture) p5.texture(texture)
+        if (texture) p5.texture(texture);
+        const currentPosition = mettersToPixels(this.entity.getPosition())
         p5.circle(
-            this.entity.position.x,
-            this.entity.position.y,
-            radius * 2
+            currentPosition.x,
+            currentPosition.y,
+            this.radius * 2
         );
         p5.pop();
     }
 
     moveRight() {
-        this.entity.torque = this.torque
+        this.entity.applyTorque(this.torque);
     }
 
     moveLeft() {
-        this.entity.torque = -this.torque
+        this.entity.applyTorque(-this.torque);
     }
 
-    translate(position: Matter.Vector) {
-        Body.translate(this.entity, position);
+    translate(position: Vec2) {
+        this.entity.setTransform(pixelsToMetters(position), this.entity.getAngle());
     }
 
-    getPosition() {
-        return this.entity.position;
+    getPosition = () => {
+        return mettersToPixels(this.entity.getPosition());
     }
 
     jump() {
         if (this.isOnGround) {
-            this.entity.force = {
-                x: 0,
-                y: this.jumpForce
-            }
+            const impulse = this.entity.getMass() * this.jumpForce;
+            this.entity.applyLinearImpulse(Vec2(0, impulse), this.entity.getWorldCenter());
         }
     }
 }
