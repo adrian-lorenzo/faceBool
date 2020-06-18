@@ -73,7 +73,7 @@ const level1Builder = () => {
         new Platform(
             Vec2(
                 relWidth(0.5), 
-                relHeight(0.45)
+                relHeight(0.40)
             ), 
             {
                 width: relWidth(1), 
