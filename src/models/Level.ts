@@ -127,7 +127,7 @@ export default class Level {
     }
 
     onAudioPeak = () => {
-        //this.actions.set(PlayerAction.Jump, true);
+        this.actions.set(PlayerAction.Jump, true);
     }
 
     checkLimits = () => {
