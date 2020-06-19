@@ -35,8 +35,8 @@ export class MainScreen implements Drawable {
         p5.textSize(relWidth(0.15));
         p5.textAlign(p5.CENTER);
         p5.fill(0);
-        p5.text(this.title, relWidth(0), relHeight(-0.3));
-        p5.image(this.img, relWidth(0.3), relHeight(-0.42));
+        p5.text(this.title, relWidth(-0.05), relHeight(-0.3));
+        p5.image(this.img, relWidth(0.25), relHeight(-0.42));
         p5.textSize(relWidth(0.05));
         let size = -0.1;
         for (let index = 0; index < this.listOptions.length; index++) {
