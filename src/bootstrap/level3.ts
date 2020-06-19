@@ -1,21 +1,24 @@
-import Level from "../models/Level"
-import Stage from "../models/Stage"
-import Platform from "../models/Platform"
-import { relWidth, relHeight } from "../utils/uiUtils"
-import Limit, { Orientation } from "../models/Limit"
 import { Vec2 } from "planck-js"
+import Level from "../models/Level"
+import Limit, { Orientation } from "../models/Limit"
+import Platform from "../models/Platform"
+import Stage from "../models/Stage"
+import { relHeight, relWidth } from "../utils/uiUtils"
 
 const bigLeftLimit = new Limit(Vec2(0.4, 0), Orientation.LEFT);
 const hugeRightLimit = new Limit(Vec2(0.7, 0), Orientation.RIGHT);
 const smallLeftLimit = new Limit(Vec2(0.400, 0.3), Orientation.LEFT);
 const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 
+const endLeftLimit = new Limit(Vec2(0, 0), Orientation.LEFT);
+const endRightLimit = new Limit(Vec2(1, 0), Orientation.LEFT);
+
 const level3Builder = () => {
     const stage1 = new Stage([
         new Platform(
             Vec2(relWidth(0.1), relHeight(0.1)),
             {
-                width: relWidth(0.3), 
+                width: relWidth(0.3),
                 height: relHeight(0.05)
             },
             0.3
@@ -35,7 +38,7 @@ const level3Builder = () => {
         new Platform(
             Vec2(relWidth(0.9), relHeight(0.1)),
             {
-                width: relWidth(0.2), 
+                width: relWidth(0.2),
                 height: relHeight(0.05)
             },
             0.075
@@ -228,11 +231,11 @@ const level3Builder = () => {
 
         new Platform(
             Vec2(
-                relWidth(0.9), 
+                relWidth(0.9),
                 relHeight(0.2)
-            ), 
+            ),
             {
-                width: relWidth(0.15), 
+                width: relWidth(0.15),
                 height: relHeight(0.05)
             },
             0.07
@@ -242,22 +245,22 @@ const level3Builder = () => {
     const stage3 = new Stage([
         new Platform(
             Vec2(
-                relWidth(0.2), 
+                relWidth(0.2),
                 relHeight(0.6)
-            ), 
+            ),
             {
-                width: relWidth(0.1), 
+                width: relWidth(0.1),
                 height: relHeight(0.05)
             },
         ),
 
         new Platform(
             Vec2(
-                relWidth(0.32), 
+                relWidth(0.32),
                 relHeight(0.45)
-            ), 
+            ),
             {
-                width: relWidth(0.1), 
+                width: relWidth(0.1),
                 height: relHeight(0.05)
             },
             0.05
@@ -302,11 +305,14 @@ const level3Builder = () => {
     ], smallLeftLimit, hugeRightLimit)
 
     return new Level(
+        "Nivel 3",
+        60 * 1000,
         relWidth(0.20),
         [
             stage1,
             stage2,
-            stage3
+            stage3,
+            new Stage([], endLeftLimit, endRightLimit)
         ], 60);
 }
 

@@ -36,7 +36,6 @@ const Sketch = (p5: P5) => {
     let time = 0;
     let timePaused = 0;
 
-    const maxTime = 60 * 1000;
     const platformTexture = p5.loadImage('textures/platform_texture.jpg');
     const ballTexture = p5.loadImage('textures/basketball.jpg');
     const font = p5.loadFont('fonts/Roboto-Regular.ttf');
@@ -82,12 +81,8 @@ const Sketch = (p5: P5) => {
         p5.tint(55, 100);
 
         faceDetectionService.loadModel();
-        setTimeout(() => {
-            currentLevel.hasStarted = true;
-            hasEverythingLoaded = true;
-            // time = Date.now();
-            p5.tint(255, 255);
-        }, 4000);
+        currentLevel.hasStarted = true;
+        hasEverythingLoaded = true;
     }
 
     p5.draw = () => {
@@ -103,9 +98,14 @@ const Sketch = (p5: P5) => {
             runDetection();
             currentLevel.run(p5, ballTexture, platformTexture);
             sound.playGameMusic();
-            drawTime();
+            drawLevelInfo();
 
-            if (currentLevel.checkIfPLayerIsDead() || (Date.now() - time) > maxTime) {
+            if (currentLevel.currentStageIdx === currentLevel.stages.length - 1) {
+                state = GameStates.WIN;
+                restartLevel();
+            }
+
+            if (currentLevel.checkIfPLayerIsDead() || (Date.now() - time) > currentLevel.maxTime) {
                 sound.stopGameMusic();
                 sound.playLoseSound();
                 state = GameStates.DIE;
@@ -182,7 +182,7 @@ const Sketch = (p5: P5) => {
             if (state === GameStates.MENU) {
                 if (menu.indexOption === 0) {
                     state = GameStates.TUTORIAL;
-                } else if(menu.indexOption === menu.listOptions.length - 1){
+                } else if (menu.indexOption === menu.listOptions.length - 1) {
                     remote.app.quit();
                 } else {
                     levelBuildersIdx = menu.indexOption - 1;
@@ -237,11 +237,23 @@ const Sketch = (p5: P5) => {
         }
     }
 
-    function drawTime() {
+    function drawLevelInfo() {
         p5.push();
         p5.fill(255);
         p5.textSize(32);
-        p5.text(`${((maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 50, 50, 50);
+        p5.text(`${currentLevel.name}`, relWidth(1) - 100, 50);
+        p5.pop();
+
+        p5.push();
+        p5.fill(255);
+        p5.textSize(18);
+        p5.text(`Stage ${currentLevel.currentStageIdx + 1} - ${currentLevel.stages.length}`, relWidth(1) - 100, 75);
+        p5.pop();
+
+        p5.push();
+        p5.fill(255);
+        p5.textSize(32);
+        p5.text(`${((currentLevel.maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 110);
         p5.pop();
 
     }
@@ -261,7 +273,7 @@ const Sketch = (p5: P5) => {
             shader.setUniform('tex0', videoCapture);
             shader.setUniform('resolution', [relWidth(1), relHeight(1)]);
             shader.setUniform('current_time', timePaused > 0 ? 0 : Date.now() - time);
-            shader.setUniform('max_time', maxTime);
+            shader.setUniform('max_time', currentLevel.maxTime);
             shaderTexture.shader(shader);
             shaderTexture.rect(0, 0, relWidth(1), relHeight(1));
             p5.image(shaderTexture, 0, 0, relWidth(1), relHeight(1));
