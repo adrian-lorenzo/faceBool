@@ -9,7 +9,7 @@ import FaceDetectionService from "../services/FaceDetectionService";
 import { relHeight, relWidth } from "../utils/uiUtils";
 import { Loader } from "./Loader";
 import { PauseMenu } from "./PauseMenu";
-import { DieScreen, GameStates, MainScreen, TutorialScreen, WinScreen } from "./Screen";
+import { DieScreen, GameStates, MainScreen, MicSetupScreen, TutorialScreen, WinScreen } from "./Screen";
 import { Sound } from "./Sound";
 
 declare global {
@@ -35,6 +35,8 @@ const Sketch = (p5: P5) => {
     let shaderTexture;
     let time = 0;
     let timePaused = 0;
+    let totalVolume = 0;
+    let volumeRecordings = 0;
 
     const platformTexture = p5.loadImage('textures/platform_texture.jpg');
     const ballTexture = p5.loadImage('textures/basketball.jpg');
@@ -59,6 +61,7 @@ const Sketch = (p5: P5) => {
     let state: GameStates;
     let menu: MainScreen;
     let dieScreen: DieScreen;
+    let micSetup: MicSetupScreen;
     let winScreen: WinScreen;
     let tutorial: TutorialScreen;
 
@@ -67,8 +70,9 @@ const Sketch = (p5: P5) => {
         // Canvas setup
         p5.createCanvas(relWidth(1), relHeight(1), p5.WEBGL);
 
-        state = GameStates.MENU;
+        state = GameStates.MICSETUP;
         menu = new MainScreen(fontTitle, p5.loadImage('textures/baloncesto.png'));
+        micSetup = new MicSetupScreen(fontTitle, p5.loadImage('textures/sound.png'));
         dieScreen = new DieScreen(fontTitle, p5.loadImage('textures/death.png'));
         winScreen = new WinScreen(fontTitle, p5.loadImage('textures/win.png'));
         tutorial = new TutorialScreen(fontTitle, font);
@@ -122,6 +126,8 @@ const Sketch = (p5: P5) => {
             winScreen.draw(p5);
         } else if (state === GameStates.TUTORIAL) {
             tutorial.draw(p5);
+        } else if (state === GameStates.MICSETUP) {
+            micSetup.draw(p5);
         }
     }
 
@@ -132,6 +138,18 @@ const Sketch = (p5: P5) => {
 
 
     p5.keyPressed = () => {
+        if (state === GameStates.MICSETUP) {
+            if (p5.keyCode === p5.ENTER) {
+                if (!micSetup.recording) {
+                    micSetup.startRecording(() => {
+                        sound.audioVolumeThreshold = totalVolume / volumeRecordings;
+                        state = GameStates.MENU;
+                    });
+                    sound.setupMicrophoneListener(addMeasure)
+                }
+            }
+        }
+
         if (state === GameStates.GAME) {
             if (p5.key === 'D' || p5.key === 'd') {
                 currentLevel.actions.set(PlayerAction.MoveRight, true);
@@ -184,6 +202,8 @@ const Sketch = (p5: P5) => {
                     state = GameStates.TUTORIAL;
                 } else if (menu.indexOption === menu.listOptions.length - 1) {
                     remote.app.quit();
+                } else if (menu.indexOption === menu.listOptions.length - 2) {
+                    state = GameStates.MICSETUP;
                 } else {
                     levelBuildersIdx = menu.indexOption - 1;
                     currentLevel = levelBuilders[levelBuildersIdx]();
@@ -249,7 +269,16 @@ const Sketch = (p5: P5) => {
         p5.textSize(18);
         p5.text(`Stage ${currentLevel.currentStageIdx + 1} - ${currentLevel.stages.length}`, relWidth(1) - 100, 75);
         p5.pop();
+    }
 
+    function addMeasure(volume) {
+        if (volume > 0) {
+            totalVolume += volume;
+            volumeRecordings++;
+        }
+    }
+
+    function drawTime() {
         p5.push();
         p5.fill(255);
         p5.textSize(32);

@@ -120,7 +120,7 @@ export class Sound {
         Howler.volume(vol);
     }
 
-    setupMicrophoneListener(onAudioPeak: () => void) {
+    setupMicrophoneListener(onAudioRecorded: (volume) => void) {
         let sound = this
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
@@ -147,11 +147,8 @@ export class Sound {
                     }
 
                     var volume = values / length;
-                    console.log({ volume });
 
-                    if (sound.audioVolumeThreshold <= volume) {
-                        onAudioPeak()
-                    }
+                    onAudioRecorded(volume)
                 }
             });
     }
