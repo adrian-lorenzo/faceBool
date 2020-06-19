@@ -80,8 +80,12 @@ export class Sound {
     }
 
     pauseGameMusic(){
-        this.pause = !this.pause;
+        this.pause = true;
         if(this.pause) this.generalMusic.pause();
+    }
+
+    restartMusic(){
+        this.pause = false;
     }
 
     stopLoseMusic(){

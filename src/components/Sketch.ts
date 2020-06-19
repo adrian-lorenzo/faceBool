@@ -147,7 +147,7 @@ const Sketch = (p5: P5) => {
 
             if (p5.key === " ") {
                 state = GameStates.PAUSE;
-                sound.stopGameMusic();
+                sound.pauseGameMusic();
                 p5.tint(55, 100);
                 timePaused = Date.now();
                 currentLevel.isPaused = true;
@@ -173,6 +173,7 @@ const Sketch = (p5: P5) => {
                 time += Date.now() - timePaused;
                 timePaused = 0;
                 currentLevel.isPaused = false;
+                sound.restartMusic();
             }
         }
 
@@ -180,6 +181,8 @@ const Sketch = (p5: P5) => {
             if (state === GameStates.MENU) {
                 if (menu.indexOption === 0) {
                     state = GameStates.TUTORIAL;
+                } else if(menu.indexOption === menu.listOptions.length - 1){
+                    remote.app.quit();
                 } else {
                     levelBuildersIdx = menu.indexOption - 1;
                     currentLevel = levelBuilders[levelBuildersIdx]();
@@ -215,10 +218,6 @@ const Sketch = (p5: P5) => {
             state = GameStates.MENU;
             dieScreen.resetCount();
             sound.stopLoseMusic();
-        }
-
-        if ((p5.key === 'p' || p5.key === 'P') && state === GameStates.GAME) {
-            sound.pauseGameMusic();
         }
     }
 
