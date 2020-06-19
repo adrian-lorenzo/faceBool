@@ -103,6 +103,7 @@ const Sketch = (p5: P5) => {
             currentLevel.run(p5, ballTexture, platformTexture);
             sound.playGameMusic();
             drawLevelInfo();
+            drawTime();
 
             if (currentLevel.currentStageIdx === currentLevel.stages.length - 1) {
                 state = GameStates.WIN;
