@@ -81,7 +81,7 @@ const Sketch = (p5: P5) => {
         p5.frameRate(currentFrameRate);
         p5.tint(55, 100);
 
-        faceDetectionService.loadModel()
+        faceDetectionService.loadModel();
         setTimeout(() => {
             currentLevel.hasStarted = true;
             hasEverythingLoaded = true;
@@ -156,7 +156,8 @@ const Sketch = (p5: P5) => {
 
         if (state === GameStates.PAUSE) {
             if (p5.key === 'Q' || p5.key === 'q') {
-                remote.app.quit();
+                restartLevel();
+                state = GameStates.MENU;
             }
 
             if (p5.key === 'R' || p5.key === 'r') {

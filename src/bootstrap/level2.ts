@@ -12,9 +12,9 @@ const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 const level2Builder = () => {
     const stage1 = new Stage([
         new Platform(
-            Vec2(relWidth(0.15), relHeight(0.3)),
+            Vec2(relWidth(0.10), relHeight(0.3)),
             {
-                width: relWidth(0.3), 
+                width: relWidth(0.32), 
                 height: relHeight(0.05)
             },
             0.3
