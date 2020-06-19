@@ -121,7 +121,7 @@ export class Sound {
     }
 
     setupMicrophoneListener(onAudioRecorded: (volume) => void) {
-        let sound = this
+        // let sound = this
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then((stream) => {
                 let audioContext = new window.AudioContext();
