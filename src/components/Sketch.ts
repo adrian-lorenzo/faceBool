@@ -81,12 +81,8 @@ const Sketch = (p5: P5) => {
         p5.tint(55, 100);
 
         faceDetectionService.loadModel();
-        setTimeout(() => {
-            currentLevel.hasStarted = true;
-            hasEverythingLoaded = true;
-            // time = Date.now();
-            p5.tint(255, 255);
-        }, 4000);
+        currentLevel.hasStarted = true;
+        hasEverythingLoaded = true;
     }
 
     p5.draw = () => {
