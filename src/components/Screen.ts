@@ -21,7 +21,7 @@ export class MainScreen implements Drawable{
     img;
     constructor(font, img) {
         this.title = "FACE BOOL";
-        this.listOptions = ["TUTORIAL", "PLAY LEVEL 1", "PLAY LEVEL 2", "PLAY LEVEL 3"]
+        this.listOptions = ["TUTORIAL", "PLAY LEVEL 1", "PLAY LEVEL 2", "PLAY LEVEL 3", "EXIT"]
         this.msg = "> INTRO TO ";
         this.indexOption = 0;
         this.font  = font;
@@ -58,7 +58,8 @@ export class MainScreen implements Drawable{
 
     changeOption(position:number){
         if(this.indexOption + position < 0) {
-            this.indexOption = 3;
+            this.indexOption = this.listOptions.length - 1;
+            this.blink = 0;
             return;
         }
         this.indexOption = (this.indexOption + position) % this.listOptions.length
