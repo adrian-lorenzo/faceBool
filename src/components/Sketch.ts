@@ -104,6 +104,11 @@ const Sketch = (p5: P5) => {
             sound.playGameMusic();
             drawLevelInfo();
 
+            if (currentLevel.currentStageIdx === currentLevel.stages.length - 1) {
+                state = GameStates.WIN;
+                restartLevel();
+            }
+
             if (currentLevel.checkIfPLayerIsDead() || (Date.now() - time) > currentLevel.maxTime) {
                 sound.stopGameMusic();
                 sound.playLoseSound();
@@ -240,13 +245,19 @@ const Sketch = (p5: P5) => {
         p5.push();
         p5.fill(255);
         p5.textSize(32);
-        p5.text(`${((currentLevel.maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 50, 50, 50);
+        p5.text(`${currentLevel.name}`, relWidth(1) - 100, 50);
+        p5.pop();
+
+        p5.push();
+        p5.fill(255);
+        p5.textSize(18);
+        p5.text(`Stage ${currentLevel.currentStageIdx + 1} - ${currentLevel.stages.length}`, relWidth(1) - 100, 75);
         p5.pop();
 
         p5.push();
         p5.fill(255);
         p5.textSize(32);
-        p5.text(`${((currentLevel.maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 50, 50, 50);
+        p5.text(`${((currentLevel.maxTime - (Date.now() - time)) / 1000).toFixed(0)}`, relWidth(1) - 100, 110);
         p5.pop();
 
     }

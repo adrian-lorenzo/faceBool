@@ -10,6 +10,9 @@ const hugeRightLimit = new Limit(Vec2(0.7, 0), Orientation.RIGHT);
 const smallLeftLimit = new Limit(Vec2(0.400, 0.3), Orientation.LEFT);
 const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 
+const endLeftLimit = new Limit(Vec2(0, 0), Orientation.LEFT);
+const endRightLimit = new Limit(Vec2(1, 0), Orientation.LEFT);
+
 const level3Builder = () => {
     const stage1 = new Stage([
         new Platform(
@@ -308,7 +311,8 @@ const level3Builder = () => {
         [
             stage1,
             stage2,
-            stage3
+            stage3,
+            new Stage([], endLeftLimit, endRightLimit)
         ], 60);
 }
 

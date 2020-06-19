@@ -8,6 +8,9 @@ import { relHeight, relWidth } from "../utils/uiUtils"
 const leftLimit = new Limit(Vec2(0.2, 0), Orientation.LEFT);
 const rightLimit = new Limit(Vec2(0.8, 0), Orientation.RIGHT);
 
+const endLeftLimit = new Limit(Vec2(0, 0), Orientation.LEFT);
+const endRightLimit = new Limit(Vec2(1, 0), Orientation.LEFT);
+
 const level1Builder = () => {
     const stage1 = new Stage([
         new Platform(
@@ -100,7 +103,8 @@ const level1Builder = () => {
         [
             stage1,
             stage2,
-            stage3
+            stage3,
+            new Stage([], endLeftLimit, endRightLimit)
         ], 60);
 }
 
