@@ -1,4 +1,4 @@
-import {Howl, Howler} from 'howler';
+import { Howl, Howler } from 'howler';
 
 export class Sound {
     platformSound: Howl;
@@ -11,15 +11,15 @@ export class Sound {
     generalMusic: Howl;
     menuMusic: Howl;
 
-    audioVolumeThreshold = 90;
+    audioVolumeThreshold = 30;
     pause = false;
 
     constructor() {
-        this.jumpSound =    new Howl({
+        this.jumpSound = new Howl({
             src: ['sound/jump.mp3'],
             volume: 0.2
         });
-        this.platformSound  = new Howl({
+        this.platformSound = new Howl({
             src: ['sound/paltform.mp3'],
             volume: 0.1
         });
@@ -31,7 +31,7 @@ export class Sound {
             src: ['sound/you_win.mp3'],
             volume: 0.1
         });
-        this.hitWallSound   =  new Howl({
+        this.hitWallSound = new Howl({
             src: ['sound/hit_wall.mp3'],
             volume: 0.1
         });
@@ -55,52 +55,52 @@ export class Sound {
         });
     }
 
-    playJumpSound(){
+    playJumpSound() {
         this.jumpSound.play();
     }
 
-    playGameMusic(){
-        if(!this.generalMusic.playing() && !this.pause) {
+    playGameMusic() {
+        if (!this.generalMusic.playing() && !this.pause) {
             this.generalMusic.play();
         }
     }
 
-    playMenuMusic(){
-        if(!this.menuMusic.playing()) {
+    playMenuMusic() {
+        if (!this.menuMusic.playing()) {
             this.menuMusic.play();
         }
     }
 
-    stopMenuMusic(){
+    stopMenuMusic() {
         this.menuMusic.stop();
     }
 
-    stopGameMusic(){
+    stopGameMusic() {
         this.generalMusic.stop();
     }
 
-    pauseGameMusic(){
+    pauseGameMusic() {
         this.pause = true;
-        if(this.pause) this.generalMusic.pause();
+        if (this.pause) this.generalMusic.pause();
     }
 
-    restartMusic(){
+    restartMusic() {
         this.pause = false;
     }
 
-    stopLoseMusic(){
+    stopLoseMusic() {
         this.loseSound.stop();
     }
 
-    playLoseSound(){
+    playLoseSound() {
         this.loseSound.play();
     }
 
-    playPlatformSound(){
+    playPlatformSound() {
         this.platformSound.play();
     }
 
-    playMoveSound(){
+    playMoveSound() {
         this.moveSound.play();
     }
 
@@ -112,18 +112,18 @@ export class Sound {
         this.winSound.play();
     }
 
-    playHitWall(){
+    playHitWall() {
         this.hitWallSound.play();
     }
 
-    changeGlobalVolume(vol:number){
+    changeGlobalVolume(vol: number) {
         Howler.volume(vol);
     }
 
     setupMicrophoneListener(onAudioPeak: () => void) {
         let sound = this
         navigator.mediaDevices.getUserMedia({ audio: true })
-            .then( (stream) => {
+            .then((stream) => {
                 let audioContext = new window.AudioContext();
                 let analyser = audioContext.createAnalyser();
                 let microphone = audioContext.createMediaStreamSource(stream);
@@ -131,12 +131,12 @@ export class Sound {
 
                 analyser.smoothingTimeConstant = 0.8;
                 analyser.fftSize = 1024;
-                
+
                 microphone.connect(analyser);
                 processor.connect(audioContext.destination);
                 analyser.connect(processor);
 
-                processor.onaudioprocess = function() {
+                processor.onaudioprocess = function () {
                     var array = new Uint8Array(analyser.frequencyBinCount);
                     analyser.getByteFrequencyData(array);
                     var values = 0;
@@ -147,7 +147,8 @@ export class Sound {
                     }
 
                     var volume = values / length;
-                    
+                    console.log({ volume });
+
                     if (sound.audioVolumeThreshold <= volume) {
                         onAudioPeak()
                     }
