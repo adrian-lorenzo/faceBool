@@ -7,7 +7,8 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({width: 1000, height: 1000,
+  mainWindow = new BrowserWindow({
+    width: 1000, height: 1000,
     contextIsolation: true,
     webPreferences: {
       nodeIntegration: true,
@@ -16,7 +17,7 @@ function createWindow() {
 
   mainWindow.setResizable(false);
   mainWindow.setFullScreenable(false);
-  
+  mainWindow.removeMenu();
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../index.html')}`);
   mainWindow.on('closed', () => mainWindow = null);
 }
