@@ -9,7 +9,7 @@ export class PauseMenu implements Drawable {
 
     menuTitle = "PAUSE"
     restartText = "[R] - Restart level";
-    quitText = "[Q] - Quit game";
+    quitText = "[Q] - Quit level";
     resumeText = "[ESCAPE] - Resume game"
 
     constructor(position: Vec2, font: P5.Font) {
