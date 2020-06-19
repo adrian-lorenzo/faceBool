@@ -9,6 +9,9 @@ import PlayerState, { PlayerAction } from "./PlayerAction";
 import Stage from "./Stage";
 
 export default class Level {
+    name: string;
+    maxTime: number;
+
     initialStages: Stage[]
     stages: Stage[];
     frameRate: number;
@@ -36,7 +39,9 @@ export default class Level {
     actions: Map<PlayerAction, Boolean> = new Map();
     playerState: PlayerState | undefined;
 
-    constructor(platformSize: number, stages: Stage[], frameRate: number) {
+    constructor(name: string, maxTime: number, platformSize: number, stages: Stage[], frameRate: number) {
+        this.name = name;
+        this.maxTime = maxTime;
         this.platformSize = platformSize;
         this.stages = stages.slice();
         this.initialStages = stages;
