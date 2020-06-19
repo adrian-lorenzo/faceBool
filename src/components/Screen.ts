@@ -58,7 +58,8 @@ export class MainScreen implements Drawable{
 
     changeOption(position:number){
         if(this.indexOption + position < 0) {
-            this.indexOption = 3;
+            this.indexOption = this.listOptions.length - 1;
+            this.blink = 0;
             return;
         }
         this.indexOption = (this.indexOption + position) % this.listOptions.length
