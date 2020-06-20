@@ -177,6 +177,8 @@ const Sketch = (p5: P5) => {
             if (p5.key === 'Q' || p5.key === 'q') {
                 restartLevel();
                 state = GameStates.MENU;
+                sound.restartMusic();
+                sound.stopGameMusic();
             }
 
             if (p5.key === 'R' || p5.key === 'r') {
@@ -185,6 +187,8 @@ const Sketch = (p5: P5) => {
                 p5.tint(255, 255);
                 timePaused = 0;
                 currentLevel.isPaused = false;
+                sound.restartMusic();
+                sound.stopGameMusic();
             }
 
             if (p5.keyCode === p5.ESCAPE) {
