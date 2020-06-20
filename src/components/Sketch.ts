@@ -236,6 +236,7 @@ const Sketch = (p5: P5) => {
 
         if ((p5.key === 'y' || p5.key === 'Y') && state === GameStates.DIE) {
             state = GameStates.GAME;
+            time = Date.now();
             dieScreen.resetCount();
             sound.stopLoseMusic();
         }
