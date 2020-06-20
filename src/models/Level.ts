@@ -135,8 +135,10 @@ export default class Level {
         }
     }
 
-    onAudioPeak = () => {
-        this.actions.set(PlayerAction.Jump, true);
+    onAudioPeak = (volume) => {
+        if (this.sound.audioVolumeThreshold <= volume) {
+            this.actions.set(PlayerAction.Jump, true);
+        }
     }
 
     checkLimits = () => {

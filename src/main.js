@@ -16,6 +16,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: size, height: size,
     contextIsolation: true,
+    frame: false,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -34,8 +35,6 @@ function createWindow() {
   })
 
 }
-
-
 
 app.on('ready', createWindow);
 

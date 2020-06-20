@@ -8,7 +8,8 @@ export enum GameStates {
     GAME,
     DIE,
     WIN,
-    TUTORIAL
+    TUTORIAL,
+    MICSETUP
 }
 
 export class MainScreen implements Drawable {
@@ -21,7 +22,7 @@ export class MainScreen implements Drawable {
     img;
     constructor(font, img) {
         this.title = "FACE BOOL";
-        this.listOptions = ["TUTORIAL", "PLAY LEVEL 1", "PLAY LEVEL 2", "PLAY LEVEL 3", "EXIT"]
+        this.listOptions = ["TUTORIAL", "PLAY LEVEL 1", "PLAY LEVEL 2", "PLAY LEVEL 3", "RECALIBRATE MIC", "EXIT"]
         this.msg = "> INTRO TO ";
         this.indexOption = 0;
         this.font = font;
@@ -41,7 +42,7 @@ export class MainScreen implements Drawable {
         let size = -0.1;
         for (let index = 0; index < this.listOptions.length; index++) {
             if (index === this.indexOption) {
-                if (this.blink < 50) p5.text(this.msg + this.listOptions[index], relWidth(0), relHeight(size));
+                if (this.blink < 80) p5.text(this.msg + this.listOptions[index], relWidth(0), relHeight(size));
             } else {
                 p5.text(this.listOptions[index], relWidth(0), relHeight(size));
             }
@@ -53,7 +54,7 @@ export class MainScreen implements Drawable {
             this.blink = 0;
         }
         p5.textSize(relWidth(0.025));
-        p5.text("2020. All Rights Reserved.", relWidth(0), relHeight(0.4));
+        p5.text("2020. All Rights Reserved.", relWidth(0), relHeight(0.45));
     }
 
     changeOption(position: number) {
@@ -149,10 +150,10 @@ export class DieScreen implements Drawable {
         p5.fill(0);
         p5.text(this.mesg, relWidth(0), relHeight(0));
         p5.textSize(relWidth(0.1));
-        // if(this.count < 300){
-        //     this.count++;
-        //     return;
-        // }
+        if (this.count < 300) {
+            this.count++;
+            return;
+        }
         p5.text("Play Again?", relWidth(0), relHeight(0.1));
         p5.text("YES [Y]", relWidth(-0.3), relHeight(0.3));
         p5.text("NO [N]", relWidth(0.3), relHeight(0.3));
@@ -195,6 +196,70 @@ export class WinScreen implements Drawable {
         if (this.blink > 200) {
             this.blink = 0;
         }
+    }
+
+
+}
+export class MicSetupScreen implements Drawable {
+    font;
+    img;
+    mesg: string;
+    back: string;
+    blink: number;
+    time: number = 0;
+    recording = false;
+    RECORDING_TIME = 3 * 1000;
+    onRecordingFinished?: () => void;
+
+
+    constructor(font, img) {
+        this.img = img;
+        this.font = font;
+        this.mesg = "Mic Calibration";
+        this.back = "Press Intro to Start Calibration";
+        this.blink = 0;
+    }
+
+    draw(p5: P5) {
+
+        if (this.recording) {
+            const timeSpent = this.RECORDING_TIME / 1000 - Math.round((Date.now() - this.time) / 1000);
+            if (timeSpent <= 0) {
+                this.stopRecording();
+            }
+            p5.background(255);
+            p5.textFont(this.font);
+            p5.textSize(relWidth(0.5));
+            p5.text(`${timeSpent}`, relWidth(0), relHeight(0));
+            p5.textSize(relWidth(0.15));
+            p5.textAlign(p5.CENTER);
+            p5.fill(0);
+            p5.text("RECORDING...", relWidth(0), relHeight(0.3));
+            p5.textSize(relWidth(0.05));
+            p5.text("Make a continuous sound like \"AAAH\"", relWidth(0), relHeight(0.4));
+        } else {
+            p5.background(255);
+            p5.textFont(this.font);
+            p5.image(this.img, relWidth(-0.25), relHeight(-0.45), relWidth(0.5), relHeight(0.5));
+            p5.textSize(relWidth(0.15));
+            p5.textAlign(p5.CENTER);
+            p5.fill(0);
+            p5.text(this.mesg, relWidth(0), relHeight(0.3));
+            p5.textSize(relWidth(0.05));
+            p5.text(this.back, relWidth(0), relHeight(0.4));
+        }
+    }
+
+    startRecording(onRecordingFinished: () => void) {
+        this.onRecordingFinished = onRecordingFinished;
+        this.time = Date.now();
+        this.recording = true;
+    }
+
+    stopRecording() {
+        this.time = 0;
+        this.recording = false;
+        if (this.onRecordingFinished) this.onRecordingFinished()
     }
 
 
