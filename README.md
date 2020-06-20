@@ -45,7 +45,7 @@ The game is quite intuitive:
 
 ## I want to download and play it RIGHT NOW ⚡️
 
-Great! You can download the last release of the game on the [releases page](https://github.com/AdrianLorenzoDev/faceBool/releases). There, you can download your preferred platform binaries 🙂
+Great! You can download the last release of the game on the [releases page](https://github.com/AdrianLorenzoDev/faceBool/releases). There, you can choose your preferred platform binaries 🙂
 
 ## Okay... and how about running the game on the development environment? 
 
