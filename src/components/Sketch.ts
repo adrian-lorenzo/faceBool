@@ -274,6 +274,12 @@ const Sketch = (p5: P5) => {
         p5.textSize(18);
         p5.text(`Stage ${currentLevel.currentStageIdx + 1} - ${currentLevel.stages.length}`, relWidth(1) - 100, 75);
         p5.pop();
+
+        p5.push();
+        p5.fill(255);
+        p5.textSize(18);
+        p5.text(`[SPACE] - Pause Menu`, relWidth(1) - 100, 140);
+        p5.pop();
     }
 
     function addMeasure(volume) {

@@ -1,7 +1,7 @@
 {
   "name": "faceBool",
   "homepage": "./",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "private": true,
   "main": "src/main.js",
   "dependencies": {
@@ -32,16 +32,18 @@
     "web-audio-daw": "^4.9.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-prod": "yarn build && concurrently \"serve -s build -l 3000\" \"wait-on http://localhost:3000 && electron .\"",
     "electron-wdev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && electron .\"",
     "build-electron": "mkdir build/electron && cp -r src/main.js build/electron",
     "build-electron-win": "mkdir build/src && robocopy src/main.js build/electron /S",
-    "electron-package": "electron-builder build --mac --win -c.extraMetadata.main=build/electron/main.js -c.mac.identity=null --publish never"
+    "package-electron": "electron-builder build -mwl -c.extraMetadata.main=build/electron/main.js -c.mac.identity=null --publish never"
   },
+
   "build": {
     "files": [
       "build/**/*",
@@ -73,6 +75,7 @@
     "electron": "^9.0.0",
     "electron-builder": "^22.6.1",
     "electron-rebuild": "^1.11.0",
+    "react-app-rewired": "^2.1.6",
     "wait-on": "^5.0.0"
   }
 }
