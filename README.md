@@ -79,3 +79,11 @@ To start the game, use the following command to run the program via Electron.
 - [Howler.js](https://howlerjs.com/)
 - [Planck.js](https://piqnt.com/planck.js/)
 - [p5.js](https://p5js.org/es/)
+
+## References
+
+- [Sounds](http://www.sonidosmp3gratis.com/index.php)
+- [Game Music](https://giornos-theme-il-vento-doro-jojos-bizarre-adventure-golden-wind.mp3quack.com/)
+- [Music of defeat](http://www.sonidosmp3gratis.com/game)
+- [Menu Music](https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6)
+- [Screens icons](https://www.flaticon.es/)
