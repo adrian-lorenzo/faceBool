@@ -85,7 +85,7 @@ To start the game, use the following command to run the program via Electron.
 - [Jumping sound](http://www.sonidosmp3gratis.com/rebotar)
 - [Stage sound](http://www.sonidosmp3gratis.com/magico)
 - [Rebounding sound](http://www.sonidosmp3gratis.com/saltar)
-- [Winning sound](http://www.sonidosmp3gratis.com/ganar)
+- [Winning sound](https://www.zapsplat.com/?s=win&post_type=music&sound-effect-category-id)
 - [Game Music](https://www.youtube.com/watch?v=VwUGpudY4Vw)
 - [Music of defeat](https://www.zapsplat.com/page/4/?s=lose&post_type=music&sound-effect-category-id)
 - [Menu Music](https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6)
