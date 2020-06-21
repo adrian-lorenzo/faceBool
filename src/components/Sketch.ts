@@ -70,7 +70,7 @@ const Sketch = (p5: P5) => {
         // Canvas setup
         p5.createCanvas(relWidth(1), relHeight(1), p5.WEBGL);
 
-        state = GameStates.MICSETUP;
+        state = GameStates.DIE;
         menu = new MainScreen(fontTitle, p5.loadImage('textures/baloncesto.png'));
         micSetup = new MicSetupScreen(fontTitle, p5.loadImage('textures/sound.png'));
         dieScreen = new DieScreen(fontTitle, p5.loadImage('textures/death.png'));
