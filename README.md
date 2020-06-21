@@ -87,7 +87,7 @@ To start the game, use the following command to run the program via Electron.
 - [Rebounding sound](http://www.sonidosmp3gratis.com/saltar)
 - [Winning sound](http://www.sonidosmp3gratis.com/ganar)
 - [Game Music](https://www.youtube.com/watch?v=VwUGpudY4Vw)
-- [Music of defeat](http://www.sonidosmp3gratis.com/game)
+- [Music of defeat](https://www.zapsplat.com/page/4/?s=lose&post_type=music&sound-effect-category-id)
 - [Menu Music](https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6)
 - Ball Icon designed by <a href="https://www.flaticon.es/autores/prettycons" title="prettycons">prettycons</a> from <a href="https://www.flaticon.es/" title="Flaticon"> www.flaticon.es</a>
 - Trophy icon designed by  <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a>
