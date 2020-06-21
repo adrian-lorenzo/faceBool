@@ -82,8 +82,13 @@ To start the game, use the following command to run the program via Electron.
 
 ## References
 
-- [Sounds](http://www.sonidosmp3gratis.com/index.php)
-- [Game Music](https://giornos-theme-il-vento-doro-jojos-bizarre-adventure-golden-wind.mp3quack.com/)
+- [Jumping sound](http://www.sonidosmp3gratis.com/rebotar)
+- [Stage sound](http://www.sonidosmp3gratis.com/magico)
+- [Rebounding sound](http://www.sonidosmp3gratis.com/saltar)
+- [Winning sound](http://www.sonidosmp3gratis.com/ganar)
+- [Game Music](https://www.youtube.com/watch?v=VwUGpudY4Vw)
 - [Music of defeat](http://www.sonidosmp3gratis.com/game)
 - [Menu Music](https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6)
-- [Screens icons](https://www.flaticon.es/)
+- Ball Icon designed by <a href="https://www.flaticon.es/autores/prettycons" title="prettycons">prettycons</a> from <a href="https://www.flaticon.es/" title="Flaticon"> www.flaticon.es</a>
+- Trophy icon designed by  <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a>
+- Death screen icon designed by <a href="https://www.flaticon.es/autores/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a>
