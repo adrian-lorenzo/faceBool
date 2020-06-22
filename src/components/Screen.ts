@@ -144,7 +144,7 @@ export class DieScreen implements Drawable {
     draw(p5: P5) {
         p5.textFont(this.font);
         p5.background(255, 66, 66);
-        p5.image(this.img, relWidth(-0.13), relHeight(-0.45));
+        p5.image(this.img, relWidth(-0.15), relHeight(-0.45));
         p5.textSize(relWidth(0.15));
         p5.textAlign(p5.CENTER);
         p5.fill(0);
@@ -183,12 +183,12 @@ export class WinScreen implements Drawable {
     draw(p5: P5) {
         p5.background(157, 236, 241);
         p5.textFont(this.font);
-        p5.image(this.img, relWidth(-0.25), relHeight(-0.45));
-        p5.textSize(relWidth(0.15));
+        p5.image(this.img, relWidth(-0.15), relHeight(-0.45));
+        p5.textSize(relWidth(0.10));
         p5.textAlign(p5.CENTER);
         p5.fill(0);
-        p5.text(this.mesg, relWidth(0), relHeight(0.3));
-        p5.textSize(relWidth(0.1));
+        p5.text(this.mesg, relWidth(0), relHeight(0.2));
+        p5.textSize(relWidth(0.05));
         if (this.blink < 80) {
             p5.text(this.back, relWidth(0), relHeight(0.4));
         }

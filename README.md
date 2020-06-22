@@ -79,3 +79,16 @@ To start the game, use the following command to run the program via Electron.
 - [Howler.js](https://howlerjs.com/)
 - [Planck.js](https://piqnt.com/planck.js/)
 - [p5.js](https://p5js.org/es/)
+
+## References
+
+- [Jumping sound](http://www.sonidosmp3gratis.com/rebotar)
+- [Stage sound](http://www.sonidosmp3gratis.com/magico)
+- [Rebounding sound](http://www.sonidosmp3gratis.com/saltar)
+- [Winning sound](https://www.zapsplat.com/?s=win&post_type=music&sound-effect-category-id)
+- [Game Music](https://www.youtube.com/watch?v=VwUGpudY4Vw)
+- [Music of defeat](https://www.zapsplat.com/page/4/?s=lose&post_type=music&sound-effect-category-id)
+- [Menu Music](https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6)
+- Ball Icon designed by <a href="https://www.flaticon.es/autores/prettycons" title="prettycons">prettycons</a> from <a href="https://www.flaticon.es/" title="Flaticon"> www.flaticon.es</a>
+- Trophy icon designed by  <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a>
+- Death screen icon designed by <a href="https://www.flaticon.es/autores/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a>

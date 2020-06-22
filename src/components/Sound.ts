@@ -81,7 +81,7 @@ export class Sound {
 
     pauseGameMusic() {
         this.pause = true;
-        if (this.pause) this.generalMusic.pause();
+        this.generalMusic.pause();
     }
 
     restartMusic() {
