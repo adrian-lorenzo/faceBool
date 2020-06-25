@@ -98,7 +98,7 @@ const level1Builder = () => {
 
     return new Level(
         "Nivel 1",
-        60 * 1000,
+        40 * 1000,
         relWidth(0.36),
         [
             stage1,

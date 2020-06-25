@@ -115,12 +115,12 @@ export class TutorialScreen implements Drawable {
 
         p5.fill(0);
         p5.textFont(this.fontTitle);
-        if (this.blink < 80) {
+        if (this.blink < 50) {
             p5.textSize(relWidth(0.05));
             p5.text(this.back, relWidth(0), relHeight(0.4));
         }
         this.blink++;
-        if (this.blink > 200) {
+        if (this.blink > 100) {
             this.blink = 0;
         }
 
@@ -150,10 +150,10 @@ export class DieScreen implements Drawable {
         p5.fill(0);
         p5.text(this.mesg, relWidth(0), relHeight(0));
         p5.textSize(relWidth(0.1));
-        if (this.count < 300) {
-            this.count++;
-            return;
-        }
+        // if (this.count < 300) {
+        //     this.count++;
+        //     return;
+        // }
         p5.text("Play Again?", relWidth(0), relHeight(0.1));
         p5.text("YES [Y]", relWidth(-0.3), relHeight(0.3));
         p5.text("NO [N]", relWidth(0.3), relHeight(0.3));
@@ -187,13 +187,13 @@ export class WinScreen implements Drawable {
         p5.textSize(relWidth(0.10));
         p5.textAlign(p5.CENTER);
         p5.fill(0);
-        p5.text(this.mesg, relWidth(0), relHeight(0.2));
-        p5.textSize(relWidth(0.05));
-        if (this.blink < 80) {
+        p5.text(this.mesg, relWidth(0), relHeight(0.3));
+        p5.textSize(relWidth(0.1));
+        if (this.blink < 50) {
             p5.text(this.back, relWidth(0), relHeight(0.4));
         }
         this.blink++;
-        if (this.blink > 200) {
+        if (this.blink > 100) {
             this.blink = 0;
         }
     }
